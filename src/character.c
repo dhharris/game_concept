@@ -5,7 +5,6 @@ character *character_new()
         character *c = malloc(sizeof(character));
         c->position = vec2_zero();
         c->velocity = vec2_zero();
-        c->walk_timer = 0.0;
         c->facing_left = 0;
         c->health = 100;
         c->name = "Charles";
@@ -21,16 +20,22 @@ void character_update(character *c)
 {
         c->velocity.x = clamp(c->velocity.x, -5.0, 5.0); // Limit speed to 5
         c->position = vec2_add(c->position, c->velocity);
-
-        if (c->walk_timer > 0.0) {
-                c->walk_timer -= frame_time();
-        }
 }
 
 static float previous_x = 0.0;
 
-/* Renders a simple quad to the screen */
+/* Whether the character is airborne, i.e. jumping or falling */
+int is_airborne(character *c)
+{
+        return c->velocity.y != 0;
+}
 
+int is_moving(character *c)
+{
+        return fabs(c->velocity.x) > 0.5;
+}
+
+/* Renders a simple quad to the screen */
 void character_render(character *c, vec2 camera_position)
 {
 
@@ -53,7 +58,7 @@ void character_render(character *c, vec2 camera_position)
 
         /* Conditional as to if we render walking or normal icon */
         texture *character_tex;
-        if (c->walk_timer > 0.0) {
+        if (is_moving(c)) {
                 character_tex = asset_get(P("./tiles/character_walk.dds"));
         } else {
                 character_tex = asset_get(P("./tiles/character.dds"));

@@ -100,7 +100,7 @@ void platformer_init()
         ui_button *health = ui_elem_new("health", ui_button);
         ui_button_move(health, vec2_new(50, 10));
         ui_button_resize(health, vec2_new(120, 25));
-        ui_button_set_label(health, "Health 0");
+        ui_button_set_label(health, "Health 100");
         ui_button_disable(health);
 
         ui_button *time = ui_elem_new("time", ui_button);
@@ -149,10 +149,6 @@ void platformer_event(SDL_Event event)
                 if (event.key.keysym.sym == SDLK_DOWN) {
                         down_held = 1;
                 }
-                if (left_held || right_held || up_held || down_held) {
-                        character *main_char = entity_get("main_char");
-                        main_char->walk_timer += 0.15;
-                }
 
                 break;
 
@@ -189,7 +185,7 @@ static void collision_detection()
         character *main_char = entity_get("main_char");
 
         const float buffer = 4;
-        const float bounce = 0.5;
+        const float bounce = 0.0;
 
         vec2 diff;
 
@@ -301,13 +297,7 @@ static void collision_detection_coins()
                             asset_get_as(P("./sounds/hurt.wav"), sound), 0);
 
                         /* Take away from player's health */
-                        main_char->health -= 10;
-
-                        /* Update the ui text */
-                        ui_button *health = ui_elem_get("health");
-                        sprintf(health->label->string, "Health %d",
-                                main_char->health);
-                        ui_text_draw(health->label);
+                        main_char->health -= 50;
                 }
         }
 
@@ -339,16 +329,17 @@ int platformer_update()
                 main_char->velocity.x *= 0.95;
         }
 
-        if (up_held) {
-                main_char->velocity.y -= 0.1;
-        } else if (down_held) {
-                main_char->velocity.y += 0.1;
-        } else {
-                main_char->velocity.y *= 0.95;
+        if (up_held && !is_airborne(main_char)) {
+                main_char->velocity.y -= JUMP_VELOCITY;
         }
-
+        main_char->velocity.y += GRAVITY;
         /* Update moves position based on velocity */
         character_update(main_char);
+
+        /* Update character ui elements */
+        ui_button *health = ui_elem_get("health");
+        sprintf(health->label->string, "Health %d", main_char->health);
+        ui_text_draw(health->label);
 
         /* Two phases of collision detection */
         collision_detection();

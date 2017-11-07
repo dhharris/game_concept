@@ -9,12 +9,13 @@ typedef struct {
   vec2 position;
   float walk_timer;
   int facing_left; // Determine whether we need to invert the texture
-  unsigned health;
+  int health;
 } character;
 
 character* character_new();
 void character_delete(character* c);
 
+int is_airborne(character *c);
 void character_update(character* c);
 void character_render(character* c, vec2 camera_position);
 
