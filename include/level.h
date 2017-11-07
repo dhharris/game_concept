@@ -3,6 +3,8 @@
 
 #include "corange.h"
 
+#define LEVEL_NAME_LIMIT 32
+
 typedef struct {
   
   int num_tiles;
@@ -17,6 +19,7 @@ typedef struct {
   int num_tile_sets;
   int* tile_map;
   tile_set* tile_sets;
+  char name[LEVEL_NAME_LIMIT];
 
 } level;
 
@@ -55,7 +58,7 @@ typedef struct {
 
 #define TILE_SIZE 32
 
-level* level_load_file(char* filename);
+level* level_load_file(const char* filename);
 void level_delete(level* l);
 
 void level_render_background(level* l);

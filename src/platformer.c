@@ -12,7 +12,6 @@
 /* Some game state variables */
 static level *current_level = NULL;
 static vec2 camera_position = {0, 0};
-static int level_score = 0;
 static float level_time = 0;
 
 /* We store all the coin positions here */
@@ -35,7 +34,6 @@ static void reset_game()
 
         /* Set the starting level to demo.level */
         current_level = asset_get(P("./levels/demo.level"));
-        level_score = 0;
         level_time = 0.0;
 
         /* New main character entity */
@@ -93,18 +91,17 @@ void platformer_init()
         character *main_char = entity_new("main_char", character);
 
         /* Add some UI elements */
-        // TODO: Add health button
         ui_button *framerate = ui_elem_new("framerate", ui_button);
         ui_button_move(framerate, vec2_new(10, 10));
         ui_button_resize(framerate, vec2_new(30, 25));
         ui_button_set_label(framerate, " ");
         ui_button_disable(framerate);
 
-        ui_button *score = ui_elem_new("score", ui_button);
-        ui_button_move(score, vec2_new(50, 10));
-        ui_button_resize(score, vec2_new(120, 25));
-        ui_button_set_label(score, "Score 000000");
-        ui_button_disable(score);
+        ui_button *health = ui_elem_new("health", ui_button);
+        ui_button_move(health, vec2_new(50, 10));
+        ui_button_resize(health, vec2_new(120, 25));
+        ui_button_set_label(health, "Health 0");
+        ui_button_disable(health);
 
         ui_button *time = ui_elem_new("time", ui_button);
         ui_button_move(time, vec2_new(180, 10));
@@ -299,18 +296,18 @@ static void collision_detection_coins()
                         char *coin_name = entity_name(coins[i]);
                         entity_delete(coin_name);
 
-                        /* Play a nice twinkle sound */
+                        /* Play a hurting sound */
                         audio_sound_play(
-                            asset_get_as(P("./sounds/coin.wav"), sound), 0);
+                            asset_get_as(P("./sounds/hurt.wav"), sound), 0);
 
-                        /* Add some score! */
-                        level_score += 10;
+                        /* Take away from player's health */
+                        main_char->health -= 10;
 
                         /* Update the ui text */
-                        ui_button *score = ui_elem_get("score");
-                        sprintf(score->label->string, "Score %06i",
-                                level_score);
-                        ui_text_draw(score->label);
+                        ui_button *health = ui_elem_get("health");
+                        sprintf(health->label->string, "Health %d",
+                                main_char->health);
+                        ui_text_draw(health->label);
                 }
         }
 
@@ -326,7 +323,8 @@ static void collision_detection_coins()
         }
 }
 
-void platformer_update()
+/* Update game logic. Returns the status of the game state */
+int platformer_update()
 {
 
         character *main_char = entity_get("main_char");
@@ -372,6 +370,24 @@ void platformer_update()
                 sprintf(time->label->string, "Time %06i", (int)level_time);
                 ui_text_draw(time->label);
         }
+        /* Check character health. If he dies then end the game */
+        if (main_char->health <= 0)
+                return GAME_STATE_GAMEOVER;
+        return GAME_STATE_RUNNING;
+}
+
+void gameover_render()
+{
+        level l;
+        strncpy(l.name, "gameover", 9);
+        /* Clear the screen to a single color */
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        level_render_background(&l);
+}
+
+void pause_render()
+{
+        // TODO: Implement me!
 }
 
 void platformer_render()
@@ -414,16 +430,16 @@ int main(int argc, char **argv)
 
         /* Init Corange, pointing to the assets_core folder */
         corange_init("./assets_core");
-        graphics_viewport_set_title("Birdy");
+        graphics_viewport_set_title("A Game");
         graphics_viewport_set_size(800, 600);
 
         platformer_init();
 
-        /* Set the game running, create SDL_Event struct to monitor events */
-        int running = 1;
+        /* Set the game state, create SDL_Event struct to monitor events */
+        int state = GAME_STATE_RUNNING;
         SDL_Event event;
 
-        while (running) {
+        while (state) {
 
                 /* Frame functions used to monitor frame times, FPS and other */
                 frame_begin();
@@ -432,10 +448,14 @@ int main(int argc, char **argv)
 
                         switch (event.type) {
                         case SDL_KEYUP:
-                                /* Exit on ESCAPE and Screenshot on print screen
+                                /* Pause on ESCAPE and Screenshot on print
+                                 * screen
                                  */
                                 if (event.key.keysym.sym == SDLK_ESCAPE) {
-                                        running = 0;
+                                        if (state == GAME_STATE_RUNNING)
+                                                state = GAME_STATE_PAUSED;
+                                        else
+                                                state = GAME_STATE_RUNNING;
                                 }
                                 if (event.key.keysym.sym == SDLK_PRINTSCREEN) {
                                         graphics_viewport_screenshot();
@@ -444,7 +464,7 @@ int main(int argc, char **argv)
                         case SDL_QUIT:
                                 /* A quitting event such as pressing cross in
                                  * top right corner */
-                                running = 0;
+                                state = GAME_STATE_STOP;
                                 break;
                         }
 
@@ -452,14 +472,24 @@ int main(int argc, char **argv)
                         platformer_event(event);
                         ui_event(event);
                 }
+                /* Only update game if it is running */
+                if (state == GAME_STATE_RUNNING) {
+                        state = platformer_update();
+                        ui_update();
 
-                platformer_update();
-                ui_update();
+                        platformer_render();
+                        ui_render();
 
-                platformer_render();
-                ui_render();
+                } else if (state == GAME_STATE_PAUSED) {
+                        /* Render pause menu */
+                        pause_render();
+                } else if (state == GAME_STATE_GAMEOVER) {
+                        /* Render Game Over screen */
+                        gameover_render();
+                }
 
-                /* Flip the Screen Buffer. We've finished with this frame. */
+                /* Flip the Screen Buffer. We've finished with this
+                 * frame. */
                 graphics_swap();
 
                 /* This allows us to fix the framerate to 60 fps, even on my
