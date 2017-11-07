@@ -1,7 +1,7 @@
 DEMO=platformer
 CC=gcc
 
-INCS= -I ./include -I ../../include
+INCS= -I ./include
 
 CFLAGS= $(INCS) -std=gnu99 -Wall -Werror -Wno-unused -O3 -g
 C_FILES= $(wildcard src/*.c)
