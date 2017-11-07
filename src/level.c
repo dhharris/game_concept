@@ -197,10 +197,10 @@ level *level_load_file(const char *filename)
         l->tile_sets = malloc(sizeof(tile_set) * num_tile_types);
         l->tile_map = calloc(sizeof(int), MAX_WIDTH * MAX_HEIGHT);
 
-
         /* Load level name, placing null byte when encountering the . */
         const char *start = filename + strlen(filename);
-        while (*start-- != '/'); // Find the part past the last /
+        while (*start-- != '/')
+                ; // Find the part past the last /
         strncpy(l->name, start + 1, LEVEL_NAME_LIMIT);
         l->name[LEVEL_NAME_LIMIT - 1] = '\0';
         for (i = 0; i < LEVEL_NAME_LIMIT; ++i)
