@@ -4,10 +4,12 @@
 #include "corange.h"
 
 typedef struct {
+  char *name;
   vec2 velocity;
   vec2 position;
-  float flap_timer;
-  bool facing_left;
+  float walk_timer;
+  int facing_left; // Determine whether we need to invert the texture
+  unsigned health;
 } character;
 
 character* character_new();

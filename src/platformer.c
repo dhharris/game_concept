@@ -93,6 +93,7 @@ void platformer_init()
         character *main_char = entity_new("main_char", character);
 
         /* Add some UI elements */
+        // TODO: Add health button
         ui_button *framerate = ui_elem_new("framerate", ui_button);
         ui_button_move(framerate, vec2_new(10, 10));
         ui_button_resize(framerate, vec2_new(30, 25));
@@ -131,6 +132,8 @@ void platformer_init()
 /* Some flags to monitor key inputs */
 static int left_held = 0;
 static int right_held = 0;
+static int up_held = 0;
+static int down_held = 0;
 
 void platformer_event(SDL_Event event)
 {
@@ -138,18 +141,20 @@ void platformer_event(SDL_Event event)
         switch (event.type) {
         case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_LEFT) {
-                        left_held = true;
+                        left_held = 1;
                 }
                 if (event.key.keysym.sym == SDLK_RIGHT) {
-                        right_held = true;
+                        right_held = 1;
                 }
-
-                /* Up key used to "jump". Just adds to up velocity and flaps
-                 * wings of icon */
                 if (event.key.keysym.sym == SDLK_UP) {
+                        up_held = 1;
+                }
+                if (event.key.keysym.sym == SDLK_DOWN) {
+                        down_held = 1;
+                }
+                if (left_held || right_held || up_held || down_held) {
                         character *main_char = entity_get("main_char");
-                        main_char->velocity.y -= 5.0;
-                        main_char->flap_timer = 0.15;
+                        main_char->walk_timer += 0.15;
                 }
 
                 break;
@@ -160,6 +165,12 @@ void platformer_event(SDL_Event event)
                 }
                 if (event.key.keysym.sym == SDLK_RIGHT) {
                         right_held = 0;
+                }
+                if (event.key.keysym.sym == SDLK_UP) {
+                        up_held = 0;
+                }
+                if (event.key.keysym.sym == SDLK_DOWN) {
+                        down_held = 0;
                 }
                 break;
         }
@@ -310,8 +321,8 @@ static void collision_detection_coins()
         if ((entity_type_count(coin) == 0) && (!victory->active)) {
                 ui_button *victory = ui_elem_get("victory");
                 ui_button *new_game = ui_elem_get("new_game");
-                victory->active = true;
-                new_game->active = true;
+                victory->active = 1;
+                new_game->active = 1;
         }
 }
 
@@ -322,7 +333,7 @@ void platformer_update()
 
         if (left_held) {
                 main_char->velocity.x -= 0.1;
-                main_char->facing_left = true;
+                main_char->facing_left = 1;
         } else if (right_held) {
                 main_char->velocity.x += 0.1;
                 main_char->facing_left = 0;
@@ -330,9 +341,13 @@ void platformer_update()
                 main_char->velocity.x *= 0.95;
         }
 
-        /* Give the player some gravity speed */
-        const float gravity = 0.2;
-        main_char->velocity.y += gravity;
+        if (up_held) {
+                main_char->velocity.y -= 0.1;
+        } else if (down_held) {
+                main_char->velocity.y += 0.1;
+        } else {
+                main_char->velocity.y *= 0.95;
+        }
 
         /* Update moves position based on velocity */
         character_update(main_char);
