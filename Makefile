@@ -1,4 +1,4 @@
-DEMO=platformer
+DEMO=demo
 CC=gcc
 
 INCS= -I ./include
@@ -37,5 +37,5 @@ lib:
 	mkdir lib
 	
 clean:
-	rm $(OUT) $(OBJ_FILES)
+	$(RM) $(OUT) $(OBJ_FILES)
 

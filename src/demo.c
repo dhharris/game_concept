@@ -7,7 +7,7 @@
 #include "coin.h"
 #include "level.h"
 
-#include "platformer.h"
+#include "demo.h"
 
 /* Some game state variables */
 static level *current_level = NULL;
@@ -67,11 +67,11 @@ void on_newgame(ui_button *b, void *unused)
         reset_game();
 }
 
-void platformer_init()
+void demo_init()
 {
 
         /* Set the viewport title */
-        graphics_viewport_set_title("Platformer");
+        graphics_viewport_set_title("demo");
 
         /* Register functions for loading/unloading files with the extension
          * .level */
@@ -133,7 +133,7 @@ static int right_held = 0;
 static int up_held = 0;
 static int down_held = 0;
 
-void platformer_event(SDL_Event event)
+void demo_event(SDL_Event event)
 {
 
         switch (event.type) {
@@ -315,7 +315,7 @@ static void collision_detection_coins()
 }
 
 /* Update game logic. Returns the status of the game state */
-int platformer_update()
+int demo_update()
 {
 
         character *main_char = entity_get("main_char");
@@ -382,7 +382,7 @@ void pause_render()
         // TODO: Implement me!
 }
 
-void platformer_render()
+void demo_render()
 {
 
         /* Clear the screen to a single color */
@@ -403,7 +403,7 @@ void platformer_render()
         }
 }
 
-void platformer_finish()
+void demo_finish()
 {
         /* Entity and asset managers will automatically delete any remaining
          * objects. */
@@ -423,7 +423,7 @@ int main(int argc, char **argv)
         graphics_viewport_set_title("A Game");
         graphics_viewport_set_size(800, 600);
 
-        platformer_init();
+        demo_init();
 
         /* Set the game state, create SDL_Event struct to monitor events */
         int state = GAME_STATE_RUNNING;
@@ -459,15 +459,15 @@ int main(int argc, char **argv)
                         }
 
                         /* Also send this event off to the game and ui */
-                        platformer_event(event);
+                        demo_event(event);
                         ui_event(event);
                 }
                 /* Only update game if it is running */
                 if (state == GAME_STATE_RUNNING) {
-                        state = platformer_update();
+                        state = demo_update();
                         ui_update();
 
-                        platformer_render();
+                        demo_render();
                         ui_render();
 
                 } else if (state == GAME_STATE_PAUSED) {
@@ -487,7 +487,7 @@ int main(int argc, char **argv)
                 frame_end();
         }
 
-        platformer_finish();
+        demo_finish();
 
         /* Corange will unload remaining assets and delete any remaining
          * entities */

@@ -1,5 +1,5 @@
-#ifndef platformer_h
-#define platformer_h
+#ifndef demo_h
+#define demo_h
 
 /* Contains important game constants and methods */
 
@@ -13,10 +13,10 @@
 #define JUMP_VELOCITY 5.0
 #define GRAVITY 0.2
 
-void platformer_init();
-void platformer_event(SDL_Event event);
-int platformer_update();
-void platformer_render();
-void platformer_finish();
+void demo_init();
+void demo_event(SDL_Event event);
+int demo_update();
+void demo_render();
+void demo_finish();
 
 #endif

@@ -10,4 +10,4 @@ You will need to install the Corange library–clone [my fork](https://github.co
     make
 
 ### Running
-    ./platformer
+    ./demo
