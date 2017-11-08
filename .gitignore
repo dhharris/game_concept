@@ -4,6 +4,7 @@
 *.dSYM
 *.swp
 *.exe
+.DS*
 stdout.txt
 stderr.txt
 platformer
