@@ -107,7 +107,7 @@ bool tile_has_collision(int tiletype)
 /* Levels are basically stored in an ascii file, with these being the tile type
  * characters. */
 
-static int tile_for_char(char c)
+static int char_to_tile(char c)
 {
 
         switch (c) {
@@ -218,7 +218,7 @@ level *level_load_file(const char *filename)
 
                 for (x = 0; x < strlen(line); x++) {
                         char c = line[x];
-                        int type = tile_for_char(c);
+                        int type = char_to_tile(c);
 
                         l->tile_map[x + y * MAX_WIDTH] = type;
                         tile_counts[type]++;
