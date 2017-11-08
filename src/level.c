@@ -13,75 +13,108 @@ static texture *tile_get_texture(int tiletype)
 {
         texture *t;
         switch (tiletype) {
-        case tiletype_none: t = asset_get(P("./tiles/tile_sky.dds")); break;
-        case tiletype_air: t = asset_get(P("./tiles/tile_sky.dds")); break;
-        case tiletype_dirt: t = asset_get(P("./tiles/tile_dirt.dds")); break;
-        case tiletype_dirt_rock:
-                t = asset_get(P("./tiles/tile_dirt_rock.dds"));
-                break;
-        case tiletype_dirt_overhang:
-                t = asset_get(P("./tiles/tile_dirt_overhang.dds"));
-                break;
-        case tiletype_surface:
-                t = asset_get(P("./tiles/tile_surface.dds"));
-                break;
-        case tiletype_grass: t = asset_get(P("./tiles/tile_grass.dds")); break;
-        case tiletype_grass_rock1:
-                t = asset_get(P("./tiles/tile_grass_rock1.dds"));
-                break;
-        case tiletype_grass_rock2:
-                t = asset_get(P("./tiles/tile_grass_rock2.dds"));
-                break;
-        case tiletype_grass_tree:
-                t = asset_get(P("./tiles/tile_grass_tree.dds"));
-                break;
-        case tiletype_tree: t = asset_get(P("./tiles/tile_tree.dds")); break;
-        case tiletype_tree_top:
-                t = asset_get(P("./tiles/tile_tree_top.dds"));
-                break;
-        case tiletype_tree_top_left:
-                t = asset_get(P("./tiles/tile_tree_top_left.dds"));
-                break;
-        case tiletype_tree_top_right:
-                t = asset_get(P("./tiles/tile_tree_top_right.dds"));
-                break;
-        case tiletype_tree_topest:
-                t = asset_get(P("./tiles/tile_tree_topest.dds"));
-                break;
-        case tiletype_tree_bot_left:
-                t = asset_get(P("./tiles/tile_tree_bot_left.dds"));
-                break;
-        case tiletype_tree_bot_right:
-                t = asset_get(P("./tiles/tile_tree_bot_right.dds"));
-                break;
-        case tiletype_tree_junc_left:
-                t = asset_get(P("./tiles/tile_tree_junc_left.dds"));
-                break;
-        case tiletype_tree_junc_right:
-                t = asset_get(P("./tiles/tile_tree_junc_right.dds"));
-                break;
-        case tiletype_tree_turn_left:
-                t = asset_get(P("./tiles/tile_tree_turn_left.dds"));
-                break;
-        case tiletype_tree_turn_right:
-                t = asset_get(P("./tiles/tile_tree_turn_right.dds"));
-                break;
-        case tiletype_tree_side:
-                t = asset_get(P("./tiles/tile_tree_side.dds"));
-                break;
-        case tiletype_house_bot_left:
-                t = asset_get(P("./tiles/tile_house_bot_left.dds"));
-                break;
-        case tiletype_house_bot_right:
-                t = asset_get(P("./tiles/tile_house_bot_right.dds"));
-                break;
-        case tiletype_house_top_left:
-                t = asset_get(P("./tiles/tile_house_top_left.dds"));
-                break;
-        case tiletype_house_top_right:
-                t = asset_get(P("./tiles/tile_house_top_right.dds"));
-                break;
-        default: t = NULL;
+                case TILETYPE_AIR:
+                        t = asset_get(P("./tiles/tile_sky.dds"));
+                        break;
+                case TILETYPE_DIRT:
+                        t = asset_get(P("./tiles/tile_dirt.dds"));
+                        break;
+                case TILETYPE_DIRT_ROCK:
+                        t = asset_get(P("./tiles/tile_dirt_rock.dds"));
+                        break;
+                case TILETYPE_DIRT_OVERHANG:
+                        t = asset_get(P("./tiles/tile_dirt_overhang.dds"));
+                        break;
+                case TILETYPE_SURFACE:
+                        t = asset_get(P("./tiles/tile_surface.dds"));
+                        break;
+                case TILETYPE_GRASS:
+                        t = asset_get(P("./tiles/tile_grass.dds"));
+                        break;
+                case TILETYPE_GRASS_ROCK1:
+                        t = asset_get(P("./tiles/tile_grass_rock1.dds"));
+                        break;
+                case TILETYPE_GRASS_ROCK2:
+                        t = asset_get(P("./tiles/tile_grass_ROCK2.dds"));
+                        break;
+                case TILETYPE_GRASS_TREE:
+                        t = asset_get(P("./tiles/tile_grass_tree.dds"));
+                        break;
+                case TILETYPE_TREE:
+                        t = asset_get(P("./tiles/tile_tree.dds"));
+                        break;
+                case TILETYPE_TREE_TOP:
+                        t = asset_get(P("./tiles/tile_tree_top.dds"));
+                        break;
+                case TILETYPE_TREE_TOP_LEFT:
+                        t = asset_get(P("./tiles/tile_tree_top_left.dds"));
+                        break;
+                case TILETYPE_TREE_TOP_RIGHT:
+                        t = asset_get(P("./tiles/tile_tree_top_right.dds"));
+                        break;
+                case TILETYPE_TREE_TOPEST:
+                        t = asset_get(P("./tiles/tile_tree_topest.dds"));
+                        break;
+                case TILETYPE_TREE_BOT_LEFT:
+                        t = asset_get(P("./tiles/tile_tree_bot_left.dds"));
+                        break;
+                case TILETYPE_TREE_BOT_RIGHT:
+                        t = asset_get(P("./tiles/tile_tree_bot_right.dds"));
+                        break;
+                case TILETYPE_TREE_JUNC_LEFT:
+                        t = asset_get(P("./tiles/tile_tree_junc_left.dds"));
+                        break;
+                case TILETYPE_TREE_JUNC_RIGHT:
+                        t = asset_get(P("./tiles/tile_tree_junc_right.dds"));
+                        break;
+                case TILETYPE_TREE_TURN_LEFT:
+                        t = asset_get(P("./tiles/tile_tree_turn_left.dds"));
+                        break;
+                case TILETYPE_TREE_TURN_RIGHT:
+                        t = asset_get(P("./tiles/tile_tree_turn_right.dds"));
+                        break;
+                case TILETYPE_TREE_SIDE:
+                        t = asset_get(P("./tiles/tile_tree_side.dds"));
+                        break;
+                case TILETYPE_HOUSE_BOT_LEFT:
+                        t = asset_get(P("./tiles/tile_house_bot_left.dds"));
+                        break;
+                case TILETYPE_HOUSE_BOT_RIGHT:
+                        t = asset_get(P("./tiles/tile_house_bot_right.dds"));
+                        break;
+                case TILETYPE_HOUSE_TOP_LEFT:
+                        t = asset_get(P("./tiles/tile_house_top_left.dds"));
+                        break;
+                case TILETYPE_HOUSE_TOP_RIGHT:
+                        t = asset_get(P("./tiles/tile_house_top_right.dds"));
+                        break;
+                case TILETYPE_BRICK:
+                        t = asset_get(P("./tiles/brick.dds"));
+                        break;
+                case TILETYPE_BRICK_WITH_FLOOR:
+                        t = asset_get(P("./tiles/brick_with_floor.dds"));
+                        break;
+                case TILETYPE_DOOR:
+                        t = asset_get(P("./tiles/door.dds"));
+                        break;
+                case TILETYPE_LADDER:
+                        t = asset_get(P("./tiles/ladder.dds"));
+                        break;
+                case TILETYPE_WALKWAY_TOP:
+                        t = asset_get(P("./tiles/walkway_top.dds"));
+                        break;
+                case TILETYPE_WALKWAY_BOT:
+                        t = asset_get(P("./tiles/walkway_bot.dds"));
+                        break;
+                case TILETYPE_COBWEB:
+                        t = asset_get(P("./tiles/cobweb.dds"));
+                        break;
+                case TILETYPE_IVY:
+                        t = asset_get(P("./tiles/ivy.dds"));
+                        break;
+                default:
+                        t = asset_get(P("./tiles/none.dds"));
+                        break;
         }
         return t;
 }
@@ -90,15 +123,34 @@ bool tile_has_collision(int tiletype)
 {
 
         switch (tiletype) {
-        case tiletype_dirt: return true;
-        case tiletype_dirt_rock: return true;
-        case tiletype_dirt_overhang: return true;
-        case tiletype_surface: return true;
-        case tiletype_grass_rock1: return true;
-        case tiletype_house_bot_left: return true;
-        case tiletype_house_bot_right: return true;
-        case tiletype_house_top_left: return true;
-        case tiletype_house_top_right: return true;
+                case TILETYPE_DIRT:
+                        return true;
+                case TILETYPE_DIRT_ROCK:
+                        return true;
+                case TILETYPE_DIRT_OVERHANG:
+                        return true;
+                case TILETYPE_SURFACE:
+                        return true;
+                case TILETYPE_GRASS_ROCK1:
+                        return true;
+                case TILETYPE_HOUSE_BOT_LEFT:
+                        return true;
+                case TILETYPE_HOUSE_BOT_RIGHT:
+                        return true;
+                case TILETYPE_HOUSE_TOP_LEFT:
+                        return true;
+                case TILETYPE_HOUSE_TOP_RIGHT:
+                        return true;
+                case TILETYPE_BRICK:
+                        return true;
+                case TILETYPE_BRICK_WITH_FLOOR:
+                        return true;
+                case TILETYPE_DOOR:
+                        return true;
+                case TILETYPE_WALKWAY_TOP:
+                        return true;
+                case TILETYPE_WALKWAY_BOT:
+                        return true;
         }
 
         return false;
@@ -111,41 +163,75 @@ static int char_to_tile(char c)
 {
 
         switch (c) {
-        case '\r': return tiletype_none;
-        case '\n': return tiletype_none;
-        case ' ': return tiletype_none;
-        case '`': return tiletype_air;
-        case '#': return tiletype_dirt;
-        case 'R': return tiletype_dirt_rock;
-        case '"': return tiletype_dirt_overhang;
-        case '~': return tiletype_surface;
-        case '_': return tiletype_grass;
-        case '@': return tiletype_grass_rock1;
-        case '.': return tiletype_grass_rock2;
-        case '!': return tiletype_grass_tree;
-        case '|': return tiletype_tree;
-        case '\'': return tiletype_tree_top;
-        case '{': return tiletype_tree_top_left;
-        case '}': return tiletype_tree_top_right;
-        case '^': return tiletype_tree_topest;
-        case '(': return tiletype_tree_bot_left;
-        case ')': return tiletype_tree_bot_right;
-        case '+': return tiletype_tree_junc_right;
-        case '*': return tiletype_tree_junc_left;
-        case '/': return tiletype_tree_turn_right;
-        case '\\': return tiletype_tree_turn_left;
-        case '-': return tiletype_tree_side;
-        case 'h': return tiletype_house_bot_left;
-        case 'u': return tiletype_house_bot_right;
-        case 'd': return tiletype_house_top_left;
-        case 'b': return tiletype_house_top_right;
+                case '\r':
+                        return TILETYPE_NONE;
+                case '\n':
+                        return TILETYPE_NONE;
+                case ' ':
+                        return TILETYPE_NONE;
+                case '`':
+                        return TILETYPE_AIR;
+                case '#':
+                        return TILETYPE_BRICK;
+                case 'D':
+                        return TILETYPE_DIRT;
+                case 'R':
+                        return TILETYPE_DIRT_ROCK;
+                case '=':
+                        return TILETYPE_LADDER;
+                case '"':
+                        return TILETYPE_GRASS;
+                case '-':
+                        return TILETYPE_WALKWAY_TOP;
+                case '_':
+                        return TILETYPE_WALKWAY_BOT;
+                case '~':
+                        return TILETYPE_BRICK_WITH_FLOOR;
+                case '@':
+                        return TILETYPE_GRASS_ROCK1;
+                case '.':
+                        return TILETYPE_GRASS_ROCK2;
+                case '!':
+                        return TILETYPE_GRASS_TREE;
+                case '|':
+                        return TILETYPE_TREE;
+                case '\'':
+                        return TILETYPE_TREE_TOP;
+                case '{':
+                        return TILETYPE_TREE_TOP_LEFT;
+                case '}':
+                        return TILETYPE_TREE_TOP_RIGHT;
+                case '^':
+                        return TILETYPE_TREE_TOPEST;
+                case '(':
+                        return TILETYPE_TREE_BOT_LEFT;
+                case ')':
+                        return TILETYPE_TREE_BOT_RIGHT;
+                case '+':
+                        return TILETYPE_TREE_JUNC_RIGHT;
+                case '*':
+                        return TILETYPE_TREE_JUNC_LEFT;
+                case '/':
+                        return TILETYPE_TREE_TURN_RIGHT;
+                case '\\':
+                        return TILETYPE_TREE_TURN_LEFT;
+                case '>':
+                        return TILETYPE_TREE_SIDE;
+                case 'h':
+                        return TILETYPE_HOUSE_BOT_LEFT;
+                case 'u':
+                        return TILETYPE_HOUSE_BOT_RIGHT;
+                case 'd':
+                        return TILETYPE_HOUSE_TOP_LEFT;
+                case 'b':
+                        return TILETYPE_HOUSE_TOP_RIGHT;
         }
 
         warning("Unknown tile type character: '%c'", c);
-        return tiletype_none;
+        return TILETYPE_NONE;
 }
 
-static int tile_counts[num_tile_types];
+static int tile_counts[NUM_TILE_TYPES];
 
 /* This just runs through the file and fills some vertex buffers with tile
  * properties */
@@ -188,13 +274,13 @@ level *level_load_file(const char *filename)
 {
         int i;
 
-        for (i = 0; i < num_tile_types; i++) {
+        for (i = 0; i < NUM_TILE_TYPES; i++) {
                 tile_counts[i] = 0;
         }
 
         level *l = malloc(sizeof(level));
-        l->num_tile_sets = num_tile_types;
-        l->tile_sets = malloc(sizeof(tile_set) * num_tile_types);
+        l->num_tile_sets = NUM_TILE_TYPES;
+        l->tile_sets = malloc(sizeof(tile_set) * NUM_TILE_TYPES);
         l->tile_map = calloc(sizeof(int), MAX_WIDTH * MAX_HEIGHT);
 
         /* Load level name, placing null byte when encountering the . */
@@ -230,7 +316,7 @@ level *level_load_file(const char *filename)
         SDL_RWclose(file);
 
         /* Start from 1, type 0 is none! */
-        for (int i = 1; i < num_tile_types; i++) {
+        for (int i = 1; i < NUM_TILE_TYPES; i++) {
 
                 int num_tiles = tile_counts[i];
 
@@ -245,7 +331,6 @@ level *level_load_file(const char *filename)
                         for (y = 0; y < MAX_HEIGHT; y++) {
                                 int type = l->tile_map[x + y * MAX_WIDTH];
                                 if (type == i) {
-
                                         position_data[pos_i] = x * TILE_SIZE;
                                         pos_i++;
                                         position_data[pos_i] = y * TILE_SIZE;
@@ -406,7 +491,6 @@ void level_render_tiles(level *l, vec2 camera_position)
         /* Start from 1, 0 is no tiles! */
 
         for (int i = 1; i < l->num_tile_sets; i++) {
-
                 texture *tile_tex = tile_get_texture(i);
                 glBindTexture(GL_TEXTURE_2D, texture_handle(tile_tex));
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,

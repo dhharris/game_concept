@@ -79,6 +79,7 @@ void platformer_init()
 
         /* Load Assets */
         folder_load(P("./tiles/"));
+        folder_load(P("./items/"));
         folder_load(P("./backgrounds/"));
         folder_load(P("./sounds/"));
         folder_load(P("./levels/"));
@@ -388,7 +389,7 @@ void platformer_render()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         level_render_background(current_level);
-
+        level_render_tiles(current_level, camera_position);
         character_render(entity_get_as("main_char", character),
                          camera_position);
 
@@ -400,8 +401,6 @@ void platformer_render()
         for (int i = 0; i < num_coins; i++) {
                 coin_render(coins[i], camera_position);
         }
-
-        level_render_tiles(current_level, camera_position);
 }
 
 void platformer_finish()
