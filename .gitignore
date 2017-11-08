@@ -2,6 +2,7 @@
 *.o
 *.log
 *.dSYM
+*.swp
 *.exe
 stdout.txt
 stderr.txt
