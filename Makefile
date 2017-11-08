@@ -1,4 +1,4 @@
-DEMO=demo
+BIN=demo
 CC=gcc
 
 INCS= -I ./include
@@ -10,17 +10,17 @@ OBJ_FILES= $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 PLATFORM = $(shell uname)
 
 ifeq ($(findstring Linux,$(PLATFORM)),Linux)
-	OUT=$(DEMO)
+	OUT=$(BIN)
 	LFLAGS= -lcorange -lGL -lSDL2 -lSDL2_net -lSDL2_mixer -lm
 endif
 
 ifeq ($(findstring Darwin,$(PLATFORM)),Darwin)
-	OUT=$(DEMO)
+	OUT=$(BIN)
 	LFLAGS= -lcorange -lSDL2 -lSDL2_mixer -lSDL2_Net -framework OpenGL
 endif
 
 ifeq ($(findstring MINGW,$(PLATFORM)),MINGW)
-	OUT=$(DEMO).exe
+	OUT=$(BIN).exe
 	LFLAGS= ../../corange.res -lcorange -lmingw32 -lSDL2main -lSDL2 -lSDL2_Mixer -lSDL2_Net -lopengl32
 endif
 
