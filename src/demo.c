@@ -32,13 +32,13 @@ static vec2 coin_positions[COIN_COUNT] = {
 static void reset_game()
 {
 
-        /* Set the starting level to demo.level */
-        current_level = asset_get(P("./levels/demo.level"));
+        /* Set the starting level to small.level */
+        current_level = asset_get(P("./levels/small.level"));
         level_time = 0.0;
 
         /* New main character entity */
         character *main_char = entity_get("main_char");
-        main_char->position = vec2_mul(vec2_new(20, 20), TILE_SIZE);
+        main_char->position = vec2_mul(vec2_new(1, 1), TILE_SIZE);
         main_char->velocity = vec2_zero();
 
         /* We can create multiple entities using a name format string like

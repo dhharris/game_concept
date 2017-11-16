@@ -6,21 +6,17 @@
 #define LEVEL_NAME_LIMIT 32
 
 typedef struct {
-  
-  int num_tiles;
-  GLuint positions_buffer;
-  GLuint texcoords_buffer;
-  asset_hndl mat;
-  
+        int num_tiles;
+        GLuint positions_buffer;
+        GLuint texcoords_buffer;
+        asset_hndl mat;
 } tile_set;
 
 typedef struct {
-
-  int num_tile_sets;
-  int* tile_map;
-  tile_set* tile_sets;
-  char name[LEVEL_NAME_LIMIT];
-
+        int num_tile_sets;
+        int *tile_map;
+        tile_set *tile_sets;
+        char name[LEVEL_NAME_LIMIT];
 } level;
 
 #define TILETYPE_NONE 0
@@ -33,7 +29,7 @@ typedef struct {
 #define TILETYPE_SURFACE 5
 #define TILETYPE_GRASS 6
 #define TILETYPE_GRASS_ROCK1 7
-#define TILETYPE_GRASS_ROCK2  8
+#define TILETYPE_GRASS_ROCK2 8
 
 #define TILETYPE_GRASS_TREE 9
 #define TILETYPE_TREE 10
@@ -66,16 +62,16 @@ typedef struct {
 
 #define NUM_TILE_TYPES 35 // Always one more than the last tiletype
 
-#define TILE_SIZE 32 // 32x32 pixel tiles
+#define TILE_SIZE 32 // 8x8 pixel tiles
 
-level* level_load_file(const char* filename);
-void level_delete(level* l);
+level *level_load_file(const char *filename);
+void level_delete(level *l);
 
-void level_render_background(level* l);
-void level_render_tiles(level* l, vec2 camera_position);
+void level_render_background(level *l);
+void level_render_tiles(level *l, vec2 camera_position);
 
-int level_tile_at(level* l, vec2 position);
-vec2 level_tile_position(level* l, int x, int y);
+int level_tile_at(level *l, vec2 position);
+vec2 level_tile_position(level *l, int x, int y);
 
 bool tile_has_collision(int tiletype);
 
