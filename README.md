@@ -1,6 +1,6 @@
 # game_concept
 
-A *work in progress* side-scrolling roguelike game written entirely in C.
+A *work in progress* roguelike game written entirely in C.
 
 ## Using the software
 ### Prerequisites
