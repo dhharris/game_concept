@@ -79,7 +79,7 @@ void demo_init()
 
         /* Load Assets */
         folder_load(P("./tiles/"));
-        folder_load(P("./items/"));
+        folder_load(P("./sprites/"));
         folder_load(P("./backgrounds/"));
         folder_load(P("./sounds/"));
         folder_load(P("./levels/"));
