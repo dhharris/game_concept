@@ -3,6 +3,7 @@
 *.log
 *.dSYM
 *.swp
+*.orig
 *.exe
 .DS*
 stdout.txt
