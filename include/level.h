@@ -58,5 +58,6 @@ int level_tile_at(level *l, vec2 position);
 vec2 level_tile_position(level *l, int x, int y);
 
 int tile_has_collision(int tiletype);
+int tile_is_item(int tiletype);
 
 #endif

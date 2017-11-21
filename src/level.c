@@ -62,6 +62,17 @@ static texture *tile_get_texture(int tiletype)
         return t;
 }
 
+int tile_is_item(int tiletype)
+{
+        switch(tiletype) {
+                case TILETYPE_COINS:
+                // Add other items here
+                        return 1;
+                default:
+                        return 0;
+        }
+}
+
 float tile_get_transparency(int tiletype)
 {
         switch (tiletype) {

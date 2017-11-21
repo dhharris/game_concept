@@ -5,12 +5,9 @@
  */
 #include "corange.h"
 
-/* Important constants */
-#define INVENTORY_SIZE 10
-
 typedef struct {
         int itemtype;
-        char *info; // Information about the item
+        const char *desc; // Information about the item
         vec2 position;
 } item; /* Struct that defines an item */
 
@@ -22,5 +19,14 @@ typedef struct {
 #define ITEMTYPE_SWORD 4 // a basic weapon
 
 #define NUM_ITEM_TYPES 5 // One more than last item #
+
+/* Function interface to items */
+// TODO: Render items on top of tiles, remove items from level tiles
+item *item_empty();
+item *item_new(int itemtype);
+void item_delete(item *item);
+int char_to_itemtype(char c);
+int char_is_item(char c);
+const char *item_get_description(int itemtype);
 
 #endif
