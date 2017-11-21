@@ -43,7 +43,7 @@ void character_render(character *c, vec2 camera_position)
 
         glEnable(GL_TEXTURE_2D);
 
-        texture *character_tex = asset_get(P("./sprites/sprite-0-0.dds"));
+        texture *character_tex = asset_get(P("./sprites/sprite-0-2.dds"));
         glBindTexture(GL_TEXTURE_2D, texture_handle(character_tex));
 
         /* Swaps the direction of the uvs when facing the opposite direction */

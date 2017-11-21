@@ -53,6 +53,17 @@ static texture *tile_get_texture(int tiletype)
         return t;
 }
 
+float tile_get_transparency(int tiletype)
+{
+        switch (tiletype) {
+                case TILETYPE_DOOR:
+                case TILETYPE_DOOR_OPEN:
+                        return 0.25;
+                default:
+                        return 0.5;
+        }
+}
+
 int tile_has_collision(int tiletype)
 {
 
@@ -97,6 +108,10 @@ static int char_to_tile(char c)
                         return TILETYPE_DIRT;
                 case 'R':
                         return TILETYPE_DIRT_ROCK;
+                case '+':
+                        return TILETYPE_DOOR;
+                case '-':
+                        return TILETYPE_DOOR_OPEN;
                 case '"':
                         return TILETYPE_GRASS;
                 case '|':
@@ -362,8 +377,6 @@ void level_render_tiles(level *l, vec2 camera_position)
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         glLoadIdentity();
-        // Transparent tiles
-        glColor4f(1.0, 1.0, 1.0, 0.5);
 
         glEnable(GL_TEXTURE_2D);
 
@@ -373,6 +386,9 @@ void level_render_tiles(level *l, vec2 camera_position)
         /* Start from 1, 0 is no tiles! */
 
         for (int i = 1; i < l->num_tile_sets; i++) {
+                // Tile transparency
+                glColor4f(1.0, 1.0, 1.0, tile_get_transparency(i));
+
                 texture *tile_tex = tile_get_texture(i);
                 glBindTexture(GL_TEXTURE_2D, texture_handle(tile_tex));
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
