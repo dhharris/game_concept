@@ -14,7 +14,7 @@ static level *current_level = NULL;
 static vec2 camera_position = {0, 0};
 static float level_time = 0;
 
-int can_move = 1; // Whether the character can move this frame
+int frame_counter;
 
 /* We store all the coin positions here */
 enum
@@ -346,9 +346,10 @@ int demo_update()
 {
 
         character *main_char = entity_get("main_char");
-        if (can_move)
+        if (++frame_counter == GAME_TICK) {
                 move_character(main_char);
-        can_move = !can_move;
+                frame_counter = 0;
+        }
         character_update(main_char);
 
         /* Update character ui elements */

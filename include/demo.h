@@ -10,8 +10,7 @@
 #define GAME_STATE_GAMEOVER -1
 #define GAME_STATE_STOP 0
 
-#define JUMP_VELOCITY 5.0
-#define GRAVITY 0.2
+#define GAME_TICK 10 // How many frames are in a game tick
 
 void demo_init();
 void demo_event(SDL_Event event);
