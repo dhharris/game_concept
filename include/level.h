@@ -39,9 +39,12 @@ typedef struct {
 #define TILETYPE_BRICK 12
 #define TILETYPE_DOOR 13
 #define TILETYPE_DOOR_OPEN 14
-#define TILETYPE_COBWEB 15
+#define TILETYPE_STAIRS_UP 15
+#define TILETYPE_STAIRS_DOWN 16
+#define TILETYPE_COINS 17
+#define TILETYPE_COBWEB 18
 
-#define NUM_TILE_TYPES 16 // Always one more than the last tiletype
+#define NUM_TILE_TYPES 19 // Always one more than the last tiletype
 
 #define TILE_SIZE 16 // 16x16 pixel tiles
 

@@ -1,10 +1,12 @@
 #ifndef item_h
 #define item_h
-
+/**
+ * Contains all item logic. Rendering is done by the level.
+ */
 #include "corange.h"
 
 /* Important constants */
-#define ITEM_LIMIT 255 // Maximum amount of items displayable at once
+#define INVENTORY_SIZE 10
 
 typedef struct {
         int itemtype;
@@ -18,5 +20,7 @@ typedef struct {
 #define ITEMTYPE_CHEST 2 // Open to see what's inside
 #define ITEMTYPE_URN 3   // When struck with a weapon awards random loot
 #define ITEMTYPE_SWORD 4 // a basic weapon
+
+#define NUM_ITEM_TYPES 5 // One more than last item #
 
 #endif

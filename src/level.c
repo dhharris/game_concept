@@ -43,6 +43,15 @@ static texture *tile_get_texture(int tiletype)
                 case TILETYPE_DOOR_OPEN:
                         t = asset_get(P("./sprites/sprite-8-13.dds"));
                         break;
+                case TILETYPE_STAIRS_DOWN:
+                        t = asset_get(P("./sprites/sprite-8-10.dds"));
+                        break;
+                case TILETYPE_STAIRS_UP:
+                        t = asset_get(P("./sprites/sprite-8-11.dds"));
+                        break;
+                case TILETYPE_COINS:
+                        t = asset_get(P("./sprites/sprite-13-13.dds"));
+                        break;
                 case TILETYPE_COBWEB:
                         t = asset_get(P("./sprites/sprite-11-1.dds"));
                         break;
@@ -58,7 +67,11 @@ float tile_get_transparency(int tiletype)
         switch (tiletype) {
                 case TILETYPE_DOOR:
                 case TILETYPE_DOOR_OPEN:
+                case TILETYPE_STAIRS_UP:
+                case TILETYPE_STAIRS_DOWN:
                         return 0.25;
+                case TILETYPE_BRICK:
+                        return 0.75;
                 default:
                         return 0.5;
         }
@@ -112,9 +125,15 @@ static int char_to_tile(char c)
                         return TILETYPE_DOOR;
                 case '-':
                         return TILETYPE_DOOR_OPEN;
+                case '>':
+                        return TILETYPE_STAIRS_DOWN;
+                case '<':
+                        return TILETYPE_STAIRS_UP;
+                case '$':
+                        return TILETYPE_COINS;
                 case '"':
                         return TILETYPE_GRASS;
-                case '|':
+                case '^':
                         return TILETYPE_TREE;
         }
 
@@ -170,7 +189,6 @@ level *level_load_file(const char *filename)
         }
 
         level *l = malloc(sizeof(level));
-        l->num_tile_sets = NUM_TILE_TYPES;
         l->tile_sets = malloc(sizeof(tile_set) * NUM_TILE_TYPES);
         l->tile_map = calloc(sizeof(int), MAX_WIDTH * MAX_HEIGHT);
 
@@ -306,7 +324,7 @@ void level_delete(level *l)
 {
 
         /* Start from 1 as 0 is none tile set */
-        for (int i = 1; i < l->num_tile_sets; i++) {
+        for (int i = 1; i < NUM_TILE_TYPES; i++) {
                 glDeleteBuffers(1, &l->tile_sets[i].positions_buffer);
                 glDeleteBuffers(1, &l->tile_sets[i].texcoords_buffer);
         }
@@ -352,7 +370,7 @@ void level_render_background(level *l)
 
         glEnd();
 
-        glDisable(GL_TEXTURE_2D);
+        // glDisable(GL_TEXTURE_2D);
 
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
@@ -385,7 +403,7 @@ void level_render_tiles(level *l, vec2 camera_position)
 
         /* Start from 1, 0 is no tiles! */
 
-        for (int i = 1; i < l->num_tile_sets; i++) {
+        for (int i = 1; i < NUM_TILE_TYPES; i++) {
                 // Tile transparency
                 glColor4f(1.0, 1.0, 1.0, tile_get_transparency(i));
 

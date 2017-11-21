@@ -11,30 +11,27 @@ item *item_new()
         return item;
 }
 
+int char_to_itemtype(char c)
+{
+        switch(c) {
+                case '$':
+                        return ITEMTYPE_COINS;
+                default:
+                        return ITEMTYPE_NONE;
+        }
+}
+
+const char *item_get_description(int itemtype)
+{
+        switch(itemtype) {
+                case '$':
+                        return "Lovely money!";
+                default:
+                        return "NULL";
+        }
+}
+
 void item_delete(item *item)
 {
         free(item);
-}
-
-static texture *item_get_texture(item *item)
-{
-        texture *t;
-        switch (item->itemtype) {
-                case ITEMTYPE_COINS:
-                        t = asset_get(P("./items/coins.dds"));
-                        break;
-                case ITEMTYPE_CHEST:
-                        t = asset_get(P("./items/chest.dds"));
-                        break;
-                case ITEMTYPE_URN:
-                        t = asset_get(P("./items/urn.dds"));
-                        break;
-                case ITEMTYPE_SWORD:
-                        t = asset_get(P("./items/sword.dds"));
-                        break;
-                default:
-                        t = asset_get(P("./items/none.dds"));
-                        break;
-        }
-        return t;
 }
