@@ -14,6 +14,8 @@ static level *current_level = NULL;
 static vec2 camera_position = {0, 0};
 static float level_time = 0;
 
+int can_move = 1; // Whether the character can move this frame
+
 /* We store all the coin positions here */
 enum
 {
@@ -314,27 +316,39 @@ static void collision_detection_coins()
         }
 }
 
+void move_character(character *c)
+{
+        vec2 prev = vec2_new(c->position.x, c->position.y);
+
+        if (left_held) {
+                c->position.x -= TILE_SIZE;
+                c->facing_left = 1;
+        } else if (right_held) {
+                c->position.x += TILE_SIZE;
+                c->facing_left = 0;
+        } else if (up_held) {
+                c->position.y -= TILE_SIZE;
+        } else if (down_held) {
+                c->position.y += TILE_SIZE;
+        }
+
+
+        if (tile_has_collision(level_tile_at(current_level, c->position))) {
+                // Move character back to previous position and print a
+                // nice message
+                c->position = prev;
+                debug("%s\n", "Cannot move that way");
+        }
+}
+
 /* Update game logic. Returns the status of the game state */
 int demo_update()
 {
 
         character *main_char = entity_get("main_char");
-
-        if (left_held) {
-                main_char->velocity.x -= 0.1;
-                main_char->facing_left = 1;
-        } else if (right_held) {
-                main_char->velocity.x += 0.1;
-                main_char->facing_left = 0;
-        } else {
-                main_char->velocity.x *= 0.95;
-        }
-
-        if (up_held && !is_airborne(main_char)) {
-                main_char->velocity.y -= JUMP_VELOCITY;
-        }
-        main_char->velocity.y += GRAVITY;
-        /* Update moves position based on velocity */
+        if (can_move)
+                move_character(main_char);
+        can_move = !can_move;
         character_update(main_char);
 
         /* Update character ui elements */

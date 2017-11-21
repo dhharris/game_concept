@@ -14,146 +14,66 @@ static texture *tile_get_texture(int tiletype)
         texture *t;
         switch (tiletype) {
                 case TILETYPE_AIR:
-                        t = asset_get(P("./tiles/tile_sky.dds"));
+                        t = asset_get(P("./sprites/sprite-0-13.dds"));
                         break;
                 case TILETYPE_DIRT:
-                        t = asset_get(P("./tiles/tile_dirt.dds"));
+                case TILETYPE_DIRT_OVERHANG:
+                case TILETYPE_SURFACE:
+                        t = asset_get(P("./sprites/sprite-8-3.dds"));
                         break;
                 case TILETYPE_DIRT_ROCK:
-                        t = asset_get(P("./tiles/tile_dirt_rock.dds"));
-                        break;
-                case TILETYPE_DIRT_OVERHANG:
-                        t = asset_get(P("./tiles/tile_dirt_overhang.dds"));
-                        break;
-                case TILETYPE_SURFACE:
-                        t = asset_get(P("./tiles/tile_surface.dds"));
+                        t = asset_get(P("./sprites/sprite-8-4.dds"));
                         break;
                 case TILETYPE_GRASS:
-                        t = asset_get(P("./tiles/tile_grass.dds"));
+                        t = asset_get(P("./sprites/sprite-11-4.dds"));
                         break;
                 case TILETYPE_GRASS_ROCK1:
-                        t = asset_get(P("./tiles/tile_grass_rock1.dds"));
-                        break;
                 case TILETYPE_GRASS_ROCK2:
-                        t = asset_get(P("./tiles/tile_grass_ROCK2.dds"));
-                        break;
-                case TILETYPE_GRASS_TREE:
-                        t = asset_get(P("./tiles/tile_grass_tree.dds"));
+                        t = asset_get(P("./sprites/sprite-11-5.dds"));
                         break;
                 case TILETYPE_TREE:
-                        t = asset_get(P("./tiles/tile_tree.dds"));
-                        break;
-                case TILETYPE_TREE_TOP:
-                        t = asset_get(P("./tiles/tile_tree_top.dds"));
-                        break;
-                case TILETYPE_TREE_TOP_LEFT:
-                        t = asset_get(P("./tiles/tile_tree_top_left.dds"));
-                        break;
-                case TILETYPE_TREE_TOP_RIGHT:
-                        t = asset_get(P("./tiles/tile_tree_top_right.dds"));
-                        break;
-                case TILETYPE_TREE_TOPEST:
-                        t = asset_get(P("./tiles/tile_tree_topest.dds"));
-                        break;
-                case TILETYPE_TREE_BOT_LEFT:
-                        t = asset_get(P("./tiles/tile_tree_bot_left.dds"));
-                        break;
-                case TILETYPE_TREE_BOT_RIGHT:
-                        t = asset_get(P("./tiles/tile_tree_bot_right.dds"));
-                        break;
-                case TILETYPE_TREE_JUNC_LEFT:
-                        t = asset_get(P("./tiles/tile_tree_junc_left.dds"));
-                        break;
-                case TILETYPE_TREE_JUNC_RIGHT:
-                        t = asset_get(P("./tiles/tile_tree_junc_right.dds"));
-                        break;
-                case TILETYPE_TREE_TURN_LEFT:
-                        t = asset_get(P("./tiles/tile_tree_turn_left.dds"));
-                        break;
-                case TILETYPE_TREE_TURN_RIGHT:
-                        t = asset_get(P("./tiles/tile_tree_turn_right.dds"));
-                        break;
-                case TILETYPE_TREE_SIDE:
-                        t = asset_get(P("./tiles/tile_tree_side.dds"));
-                        break;
-                case TILETYPE_HOUSE_BOT_LEFT:
-                        t = asset_get(P("./tiles/tile_house_bot_left.dds"));
-                        break;
-                case TILETYPE_HOUSE_BOT_RIGHT:
-                        t = asset_get(P("./tiles/tile_house_bot_right.dds"));
-                        break;
-                case TILETYPE_HOUSE_TOP_LEFT:
-                        t = asset_get(P("./tiles/tile_house_top_left.dds"));
-                        break;
-                case TILETYPE_HOUSE_TOP_RIGHT:
-                        t = asset_get(P("./tiles/tile_house_top_right.dds"));
+                        t = asset_get(P("./sprites/sprite-12-3.dds"));
                         break;
                 case TILETYPE_BRICK:
-                        t = asset_get(P("./tiles/brick.dds"));
-                        break;
-                case TILETYPE_BRICK_WITH_FLOOR:
-                        t = asset_get(P("./tiles/brick_with_floor.dds"));
+                        t = asset_get(P("./sprites/sprite-8-0.dds"));
                         break;
                 case TILETYPE_DOOR:
-                        t = asset_get(P("./tiles/door.dds"));
+                        t = asset_get(P("./sprites/sprite-8-12.dds"));
                         break;
-                case TILETYPE_LADDER:
-                        t = asset_get(P("./tiles/ladder.dds"));
-                        break;
-                case TILETYPE_WALKWAY_TOP:
-                        t = asset_get(P("./tiles/walkway_top.dds"));
-                        break;
-                case TILETYPE_WALKWAY_BOT:
-                        t = asset_get(P("./tiles/walkway_bot.dds"));
+                case TILETYPE_DOOR_OPEN:
+                        t = asset_get(P("./sprites/sprite-8-13.dds"));
                         break;
                 case TILETYPE_COBWEB:
-                        t = asset_get(P("./tiles/cobweb.dds"));
-                        break;
-                case TILETYPE_IVY:
-                        t = asset_get(P("./tiles/ivy.dds"));
+                        t = asset_get(P("./sprites/sprite-11-1.dds"));
                         break;
                 default:
-                        t = asset_get(P("./tiles/none.dds"));
+                        t = asset_get(P("./sprites/sprite-0-13.dds"));
                         break;
         }
         return t;
 }
 
-bool tile_has_collision(int tiletype)
+int tile_has_collision(int tiletype)
 {
 
         switch (tiletype) {
                 case TILETYPE_DIRT:
-                        return true;
+                        return 1;
                 case TILETYPE_DIRT_ROCK:
-                        return true;
+                        return 1;
                 case TILETYPE_DIRT_OVERHANG:
-                        return true;
+                        return 1;
                 case TILETYPE_SURFACE:
-                        return true;
+                        return 1;
                 case TILETYPE_GRASS_ROCK1:
-                        return true;
-                case TILETYPE_HOUSE_BOT_LEFT:
-                        return true;
-                case TILETYPE_HOUSE_BOT_RIGHT:
-                        return true;
-                case TILETYPE_HOUSE_TOP_LEFT:
-                        return true;
-                case TILETYPE_HOUSE_TOP_RIGHT:
-                        return true;
+                        return 1;
                 case TILETYPE_BRICK:
-                        return true;
-                case TILETYPE_BRICK_WITH_FLOOR:
-                        return true;
+                        return 1;
                 case TILETYPE_DOOR:
-                        return true;
-                case TILETYPE_WALKWAY_TOP:
-                        return true;
-                case TILETYPE_WALKWAY_BOT:
-                        return true;
+                        return 1;
         }
 
-        return false;
+        return 0;
 }
 
 /* Levels are basically stored in an ascii file, with these being the tile type
@@ -177,54 +97,10 @@ static int char_to_tile(char c)
                         return TILETYPE_DIRT;
                 case 'R':
                         return TILETYPE_DIRT_ROCK;
-                case '=':
-                        return TILETYPE_LADDER;
                 case '"':
                         return TILETYPE_GRASS;
-                case '-':
-                        return TILETYPE_WALKWAY_TOP;
-                case '_':
-                        return TILETYPE_WALKWAY_BOT;
-                case '~':
-                        return TILETYPE_BRICK_WITH_FLOOR;
-                case '@':
-                        return TILETYPE_GRASS_ROCK1;
-                case '.':
-                        return TILETYPE_GRASS_ROCK2;
-                case '!':
-                        return TILETYPE_GRASS_TREE;
                 case '|':
                         return TILETYPE_TREE;
-                case '\'':
-                        return TILETYPE_TREE_TOP;
-                case '{':
-                        return TILETYPE_TREE_TOP_LEFT;
-                case '}':
-                        return TILETYPE_TREE_TOP_RIGHT;
-                case '^':
-                        return TILETYPE_TREE_TOPEST;
-                case '(':
-                        return TILETYPE_TREE_BOT_LEFT;
-                case ')':
-                        return TILETYPE_TREE_BOT_RIGHT;
-                case '+':
-                        return TILETYPE_TREE_JUNC_RIGHT;
-                case '*':
-                        return TILETYPE_TREE_JUNC_LEFT;
-                case '/':
-                        return TILETYPE_TREE_TURN_RIGHT;
-                case '\\':
-                        return TILETYPE_TREE_TURN_LEFT;
-                case '>':
-                        return TILETYPE_TREE_SIDE;
-                case 'h':
-                        return TILETYPE_HOUSE_BOT_LEFT;
-                case 'u':
-                        return TILETYPE_HOUSE_BOT_RIGHT;
-                case 'd':
-                        return TILETYPE_HOUSE_TOP_LEFT;
-                case 'b':
-                        return TILETYPE_HOUSE_TOP_RIGHT;
         }
 
         warning("Unknown tile type character: '%c'", c);
@@ -404,6 +280,10 @@ level *level_load_file(const char *filename)
                 free(uv_data);
         }
 
+
+        // Set level color
+        l->color = vec3_new(0.28, 0.48, 0.25);
+
         return l;
 }
 
@@ -421,8 +301,7 @@ void level_delete(level *l)
         free(l);
 }
 
-/* Just renders a full screen quad with background texture */
-
+/* Render background of level based on its color */
 void level_render_background(level *l)
 {
 
@@ -436,14 +315,15 @@ void level_render_background(level *l)
         glPushMatrix();
         glLoadIdentity();
 
-        glEnable(GL_TEXTURE_2D);
+        //        glEnable(GL_TEXTURE_2D);
 
-        char filename[LEVEL_NAME_LIMIT * 2] = "./backgrounds/";
-        strncat(filename, l->name, LEVEL_NAME_LIMIT);
-        strncat(filename, ".dds", 5);
-        texture *background = asset_get_load(P(filename));
-        glBindTexture(GL_TEXTURE_2D, texture_handle(background));
+        //       char filename[LEVEL_NAME_LIMIT * 2] = "./backgrounds/";
+        //      strncat(filename, l->name, LEVEL_NAME_LIMIT);
+        //     strncat(filename, ".dds", 5);
+        //    texture *background = asset_get_load(P(filename));
+        //   glBindTexture(GL_TEXTURE_2D, texture_handle(background));
 
+        glColor3f(l->color.x, l->color.y, l->color.z);
         glBegin(GL_QUADS);
 
         glVertex3f(0, graphics_viewport_height(), 0.0);
@@ -482,6 +362,8 @@ void level_render_tiles(level *l, vec2 camera_position)
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         glLoadIdentity();
+        // Transparent tiles
+        glColor4f(1.0, 1.0, 1.0, 0.5);
 
         glEnable(GL_TEXTURE_2D);
 

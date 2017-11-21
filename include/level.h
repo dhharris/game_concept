@@ -15,6 +15,7 @@ typedef struct {
 typedef struct {
         int num_tile_sets;
         int *tile_map;
+        vec3 color;
         tile_set *tile_sets;
         char name[LEVEL_NAME_LIMIT];
 } level;
@@ -31,38 +32,18 @@ typedef struct {
 #define TILETYPE_GRASS_ROCK1 7
 #define TILETYPE_GRASS_ROCK2 8
 
-#define TILETYPE_GRASS_TREE 9
-#define TILETYPE_TREE 10
-#define TILETYPE_TREE_TOP 11
-#define TILETYPE_TREE_TOP_LEFT 12
-#define TILETYPE_TREE_TOP_RIGHT 13
-#define TILETYPE_TREE_TOPEST 14
-#define TILETYPE_TREE_BOT_LEFT 15
-#define TILETYPE_TREE_BOT_RIGHT 16
-#define TILETYPE_TREE_JUNC_LEFT 17
-#define TILETYPE_TREE_JUNC_RIGHT 18
-#define TILETYPE_TREE_TURN_LEFT 19
-#define TILETYPE_TREE_TURN_RIGHT 20
-#define TILETYPE_TREE_SIDE 21
+#define TILETYPE_TREE 9
+#define TILETYPE_TREE_PINE 10
+#define TILETYPE_TREE_DEAD 11
 
-#define TILETYPE_HOUSE_TOP_LEFT 22
-#define TILETYPE_HOUSE_TOP_RIGHT 23
-#define TILETYPE_HOUSE_BOT_LEFT 24
-#define TILETYPE_HOUSE_BOT_RIGHT 25
+#define TILETYPE_BRICK 12
+#define TILETYPE_DOOR 13
+#define TILETYPE_DOOR_OPEN 14
+#define TILETYPE_COBWEB 15
 
-#define TILETYPE_BRICK 26
-#define TILETYPE_BRICK_WITH_FLOOR 27
-#define TILETYPE_DOOR 28
-#define TILETYPE_DOOR_OPEN 29
-#define TILETYPE_LADDER 30
-#define TILETYPE_WALKWAY_TOP 31
-#define TILETYPE_WALKWAY_BOT 32
-#define TILETYPE_COBWEB 33
-#define TILETYPE_IVY 34
+#define NUM_TILE_TYPES 16 // Always one more than the last tiletype
 
-#define NUM_TILE_TYPES 35 // Always one more than the last tiletype
-
-#define TILE_SIZE 32 // 8x8 pixel tiles
+#define TILE_SIZE 16 // 16x16 pixel tiles
 
 level *level_load_file(const char *filename);
 void level_delete(level *l);
@@ -73,6 +54,6 @@ void level_render_tiles(level *l, vec2 camera_position);
 int level_tile_at(level *l, vec2 position);
 vec2 level_tile_position(level *l, int x, int y);
 
-bool tile_has_collision(int tiletype);
+int tile_has_collision(int tiletype);
 
 #endif
