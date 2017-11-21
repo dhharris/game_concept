@@ -26,7 +26,7 @@ endif
 $(OUT): $(OBJ_FILES)
 	$(CC) -g $(OBJ_FILES) $(LFLAGS) -o $@
 
-obj/%.o: src/%.c | obj
+obj/%.o: src/%.c include/%.h | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 
 obj:
