@@ -11,7 +11,7 @@ character *character_new()
         return c;
 }
 
-void character_delete(character *c)
+void character_destroy(character *c)
 {
         free(c);
 }
@@ -21,11 +21,9 @@ void character_update(character *c)
         // Update any character attributes
 }
 
-
 /* Renders a simple quad to the screen */
 void character_render(character *c, vec2 camera_position)
 {
-
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();

@@ -18,7 +18,7 @@ typedef struct {
 } character;
 
 character *character_new();
-void character_delete(character *c);
+void character_destroy(character *c);
 
 int is_airborne(character *c);
 void character_update(character *c);

@@ -2,6 +2,7 @@
 #define level_h
 
 #include "corange.h"
+#include "item.h"
 
 #define LEVEL_NAME_LIMIT 32
 
@@ -19,6 +20,9 @@ typedef struct {
         tile_set *tile_sets;
         char name[LEVEL_NAME_LIMIT];
 } level;
+
+#define MAX_WIDTH 512
+#define MAX_HEIGHT 512
 
 #define TILETYPE_NONE 0
 #define TILETYPE_AIR 1
@@ -41,15 +45,14 @@ typedef struct {
 #define TILETYPE_DOOR_OPEN 14
 #define TILETYPE_STAIRS_UP 15
 #define TILETYPE_STAIRS_DOWN 16
-#define TILETYPE_COINS 17
-#define TILETYPE_COBWEB 18
+#define TILETYPE_COBWEB 17
 
-#define NUM_TILE_TYPES 19 // Always one more than the last tiletype
+#define NUM_TILE_TYPES 18 // Always one more than the last tiletype
 
 #define TILE_SIZE 16 // 16x16 pixel tiles
 
 level *level_load_file(const char *filename);
-void level_delete(level *l);
+void level_destroy(level *l);
 
 void level_render_background(level *l);
 void level_render_tiles(level *l, vec2 camera_position);
@@ -58,6 +61,5 @@ int level_tile_at(level *l, vec2 position);
 vec2 level_tile_position(level *l, int x, int y);
 
 int tile_has_collision(int tiletype);
-int tile_is_item(int tiletype);
 
 #endif

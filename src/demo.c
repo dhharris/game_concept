@@ -47,7 +47,7 @@ void demo_init()
 
         /* Register functions for loading/unloading files with the extension
          * .level */
-        asset_handler(level, "level", level_load_file, level_delete);
+        asset_handler(level, "level", level_load_file, level_destroy);
 
         /* Load Assets */
         folder_load(P("./sprites/"));
@@ -56,10 +56,13 @@ void demo_init()
         folder_load(P("./levels/"));
 
         /* Register some handlers for creating and destroying entity types */
-        entity_handler(character, character_new, character_delete);
+        entity_handler(character, character_new, character_destroy);
 
         /* Create our main character */
         character *main_char = entity_new("main_char", character);
+
+        /* Initialize item map */
+        item_map_init();
 
         /* Add some UI elements */
         ui_button *framerate = ui_elem_new("framerate", ui_button);
@@ -144,8 +147,6 @@ static void collision_detection()
 {
         character *main_char = entity_get("main_char");
         int tiletype = level_tile_at(current_level, main_char->position);
-        if (tile_is_item(tiletype))
-                debug("%s\n", "Item here");
 }
 
 void move_character(character *c)
@@ -170,6 +171,15 @@ void move_character(character *c)
                 c->position = prev;
                 debug("%s\n", "Cannot move that way");
         }
+
+
+        // testing for items
+        if (!vec2_equ(c->position, prev)) {
+                item_map_add_item(ITEMTYPE_NONE, prev);
+                item_stack *head = item_map_stack_at(c->position);
+                debug("I am standing on %d items", item_stack_count(head));
+        }
+
 }
 
 /* Update game logic. Returns the status of the game state */
@@ -207,6 +217,10 @@ int demo_update()
                 sprintf(time->label->string, "Time %06i", (int)level_time);
                 ui_text_draw(time->label);
         }
+
+        /* Update items logic */
+        item_map_update();
+
         /* Check character health. If he dies then end the game */
         if (main_char->health <= 0)
                 return GAME_STATE_GAMEOVER;
@@ -234,14 +248,16 @@ void demo_render()
 
         level_render_background(current_level);
         level_render_tiles(current_level, camera_position);
+        item_map_render(camera_position);
         character_render(entity_get_as("main_char", character),
                          camera_position);
 }
 
 void demo_finish()
 {
-        /* Entity and asset managers will automatically delete any remaining
+        /* Entity and asset managers will automatically free any remaining
          * objects. */
+        item_map_destroy();
 }
 
 int main(int argc, char **argv)
@@ -328,7 +344,7 @@ int main(int argc, char **argv)
 
         demo_finish();
 
-        /* Corange will unload remaining assets and delete any remaining
+        /* Corange will unload remaining assets and free any remaining
          * entities */
         corange_finish();
 

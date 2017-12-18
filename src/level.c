@@ -3,9 +3,6 @@
 
 #include "level.h"
 
-const int MAX_WIDTH = 512;
-const int MAX_HEIGHT = 512;
-
 /* These vast case statements are basically a nasty way of assigning properties
  * to the tile types */
 
@@ -49,9 +46,6 @@ static texture *tile_get_texture(int tiletype)
                 case TILETYPE_STAIRS_UP:
                         t = asset_get(P("./sprites/sprite-8-11.dds"));
                         break;
-                case TILETYPE_COINS:
-                        t = asset_get(P("./sprites/sprite-13-13.dds"));
-                        break;
                 case TILETYPE_COBWEB:
                         t = asset_get(P("./sprites/sprite-11-1.dds"));
                         break;
@@ -60,17 +54,6 @@ static texture *tile_get_texture(int tiletype)
                         break;
         }
         return t;
-}
-
-int tile_is_item(int tiletype)
-{
-        switch(tiletype) {
-                case TILETYPE_COINS:
-                // Add other items here
-                        return 1;
-                default:
-                        return 0;
-        }
 }
 
 float tile_get_transparency(int tiletype)
@@ -140,8 +123,6 @@ static int char_to_tile(char c)
                         return TILETYPE_STAIRS_DOWN;
                 case '<':
                         return TILETYPE_STAIRS_UP;
-                case '$':
-                        return TILETYPE_COINS;
                 case '"':
                         return TILETYPE_GRASS;
                 case '^':
@@ -156,7 +137,6 @@ static int tile_counts[NUM_TILE_TYPES];
 
 /* This just runs through the file and fills some vertex buffers with tile
  * properties */
-
 static int SDL_RWreadline(SDL_RWops *file, char *buffer, int buffersize)
 {
 
@@ -324,14 +304,13 @@ level *level_load_file(const char *filename)
                 free(uv_data);
         }
 
-
         // Set level color
         l->color = vec3_new(0.28, 0.48, 0.25);
 
         return l;
 }
 
-void level_delete(level *l)
+void level_destroy(level *l)
 {
 
         /* Start from 1 as 0 is none tile set */
@@ -359,14 +338,6 @@ void level_render_background(level *l)
         glPushMatrix();
         glLoadIdentity();
 
-        //        glEnable(GL_TEXTURE_2D);
-
-        //       char filename[LEVEL_NAME_LIMIT * 2] = "./backgrounds/";
-        //      strncat(filename, l->name, LEVEL_NAME_LIMIT);
-        //     strncat(filename, ".dds", 5);
-        //    texture *background = asset_get_load(P(filename));
-        //   glBindTexture(GL_TEXTURE_2D, texture_handle(background));
-
         glColor3f(l->color.x, l->color.y, l->color.z);
         glBegin(GL_QUADS);
 
@@ -380,8 +351,6 @@ void level_render_background(level *l)
         glTexCoord2f(0, 0);
 
         glEnd();
-
-        // glDisable(GL_TEXTURE_2D);
 
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
