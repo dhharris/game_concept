@@ -142,13 +142,6 @@ void demo_event(SDL_Event event)
         }
 }
 
-/* Perform actions based on where the character is currently */
-static void collision_detection()
-{
-        character *main_char = entity_get("main_char");
-        int tiletype = level_tile_at(current_level, main_char->position);
-}
-
 void move_character(character *c)
 {
         vec2 prev = vec2_new(c->position.x, c->position.y);
@@ -197,9 +190,6 @@ int demo_update()
         ui_button *health = ui_elem_get("health");
         sprintf(health->label->string, "Health %d", main_char->health);
         ui_text_draw(health->label);
-
-        /* Check the tile that the character is standing on */
-        collision_detection();
 
         /* Camera follows main character */
         camera_position =
