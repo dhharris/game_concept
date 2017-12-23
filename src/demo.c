@@ -264,6 +264,14 @@ void demo_finish()
 {
         /* Entity and asset managers will automatically free any remaining
          * objects. */
+        int i;
+        char path[LEVEL_NAME_LIMIT];;
+
+        for (i = 0; i < NUM_LEVELS; ++i) {
+                level_get_path(path, i);
+                remove(path);
+        }
+
 }
 
 int main(int argc, char **argv)
