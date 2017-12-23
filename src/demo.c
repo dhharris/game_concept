@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
-#include <time.h>
+#include <stdio.h>
 
 #include "corange.h"
 
@@ -19,7 +17,7 @@ static float level_time = 0;
 int frame_counter;
 static int level_counter;
 
-static void reset_game()
+static void reset_level()
 {
         /* Set the level according to the level counter */
         char path[LEVEL_NAME_LIMIT];
@@ -41,7 +39,7 @@ static void reset_game()
 
 void on_newgame(ui_button *b, void *unused)
 {
-        reset_game();
+        reset_level();
 }
 
 void demo_init()
@@ -101,11 +99,8 @@ void demo_init()
 
         ui_button_set_onclick(new_game_but, on_newgame);
 
-        /* Seed random numbers */
-        srand(time(NULL));
-
         /* Reset all the game variables */
-        reset_game();
+        reset_level();
 }
 
 /* Some flags to monitor key inputs */
@@ -166,22 +161,41 @@ void move_character(character *c)
                 c->position.y += TILE_SIZE;
         }
 
-        if (tile_has_collision(level_tile_at(current_level, c->position))) {
+        int tile = level_tile_at(current_level, c->position);
+
+        if (tile_has_collision(tile)) {
                 // Move character back to previous position and print a
                 // nice message
                 c->position = prev;
-                debug("%s\n", "Cannot move that way");
+                debug("Cannot move that way");
         }
 
-        // testing for items
+        current_level->character_position = c->position;
+
         if (!vec2_equ(c->position, prev)) {
+                /* Level switching logic */
+                if (tile == TILETYPE_STAIRS_UP) {
+                        if (level_counter > 0) {
+                                level_counter--;
+                                reset_level();
+                        } else {
+                                debug("The stairs lead nowhere");
+                        }
+                } else if (tile == TILETYPE_STAIRS_DOWN) {
+                        if (level_counter < NUM_LEVELS - 1) {
+                                level_counter++;
+                                reset_level();
+                        } else {
+                                debug("The stairs lead nowhere");
+                        }
+                }
+
+                /* Item testing */
                 item_stack **item_map = current_level->item_map;
                 item_map_add_item(item_map, ITEMTYPE_NONE, prev);
                 item_stack *head = item_map_stack_at(item_map, c->position);
                 debug("I am standing on %d items", item_stack_count(head));
         }
-
-        current_level->character_position = c->position;
 }
 
 /* Update game logic. Returns the status of the game state */
@@ -265,13 +279,13 @@ void demo_finish()
         /* Entity and asset managers will automatically free any remaining
          * objects. */
         int i;
-        char path[LEVEL_NAME_LIMIT];;
+        char path[LEVEL_NAME_LIMIT];
+        ;
 
         for (i = 0; i < NUM_LEVELS; ++i) {
                 level_get_path(path, i);
                 remove(path);
         }
-
 }
 
 int main(int argc, char **argv)
@@ -323,15 +337,15 @@ int main(int argc, char **argv)
                                         }
                                         if (event.key.keysym.sym == SDLK_0) {
                                                 level_counter = 0;
-                                                reset_game();
+                                                reset_level();
                                         }
                                         if (event.key.keysym.sym == SDLK_1) {
                                                 level_counter = 1;
-                                                reset_game();
+                                                reset_level();
                                         }
                                         if (event.key.keysym.sym == SDLK_2) {
                                                 level_counter = 2;
-                                                reset_game();
+                                                reset_level();
                                         }
                                         break;
                                 case SDL_QUIT:

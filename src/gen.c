@@ -18,10 +18,11 @@ void gen_level()
         FILE *f = fopen(path, "w+");
 
         /* Place stairs in random location(s) */
-        vec2 stair_up = vec2_new(rand() % (LEVEL_SIZE - 2) + 1,
-                                 rand() % (LEVEL_SIZE - 2) + 1);
-        vec2 stair_down = vec2_new(rand() % (LEVEL_SIZE - 2) + 1,
-                                 rand() % (LEVEL_SIZE - 2) + 1);
+
+        vec2 stair_up = vec2_new(arc4random() % (LEVEL_SIZE - 2) + 1,
+                                 arc4random()  % (LEVEL_SIZE - 2) + 1);
+        vec2 stair_down = vec2_new(arc4random() % (LEVEL_SIZE - 2) + 1,
+                                 arc4random()  % (LEVEL_SIZE - 2) + 1);
 
         for (y = 0; y < LEVEL_SIZE; ++y) {
                 for (x = 0; x < LEVEL_SIZE; ++x) {
