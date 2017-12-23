@@ -135,11 +135,6 @@ static texture *item_get_texture(int itemtype)
         return t;
 }
 
-void item_destroy(item *item)
-{
-        free(item);
-}
-
 void item_render_one(item *item, vec2 camera_position)
 {
         glMatrixMode(GL_PROJECTION);
