@@ -19,6 +19,11 @@ item *item_new(int itemtype, vec2 position)
         return item;
 }
 
+void item_destroy(item *item)
+{
+        free(item);
+}
+
 item_stack *item_stack_new()
 {
         item_stack *head = malloc(sizeof(item_stack));
@@ -31,7 +36,7 @@ void item_stack_destroy(item_stack *s)
 {
         while (s->next) {
                 item_stack *tmp = s->next;
-                free(s->item);
+                item_destroy(s->item);
                 free(s);
                 s = tmp;
         }
@@ -236,7 +241,7 @@ void item_map_render(vec2 camera_position)
 {
         int i;
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i) {
-                /* Only render whatever is on the top of the item map */
+                /* Only render whatever is on the top each item stack */
                 item *top = item_map[i]->item;
                 if (top)
                         item_render_one(top, camera_position);
