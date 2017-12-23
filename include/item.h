@@ -4,7 +4,6 @@
  * Contains all item logic. Rendering is done by the level.
  */
 #include "corange.h"
-#include "level.h"
 
 typedef struct {
         int itemtype;
@@ -16,8 +15,6 @@ typedef struct item_node {
         item *item;
         struct item_node *next;
 } item_stack; /* Defines a stack of items as a linked list */
-
-extern item_stack **item_map; /* Grid of item stacks */
 
 /* Item types */
 #define ITEMTYPE_NONE 0
@@ -45,12 +42,12 @@ item *item_stack_pop(item_stack **head);
 int item_stack_count(item_stack *head);
 
 /* Rendering and ground items logic */
-void item_map_init();
-void item_map_destroy();
-void item_map_update();
-void item_map_render(vec2 camera_position);
-item_stack *item_map_stack_at(vec2 position);
-void item_map_add_item(int itemtype, vec2 position);
+item_stack **item_map_init();
+void item_map_destroy(item_stack **item_map);
+void item_map_update(item_stack **item_map);
+void item_map_render(item_stack **item_map, vec2 camera_position);
+item_stack *item_map_stack_at(item_stack **item_map, vec2 position);
+void item_map_add_item(item_stack **item_map, int itemtype, vec2 position);
 
 /* Misc helper functions */
 int char_to_itemtype(char c);

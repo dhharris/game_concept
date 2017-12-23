@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "item.h"
+#include "level.h"
 
 item *item_empty()
 {
@@ -184,18 +185,17 @@ void item_render_one(item *item, vec2 camera_position)
         glPopMatrix();
 }
 
-item_stack **item_map;
-
-void item_map_init()
+item_stack **item_map_init()
 {
-        item_map = calloc(sizeof(item_stack *), MAX_WIDTH * MAX_HEIGHT);
+        item_stack **item_map = calloc(sizeof(item_stack *), MAX_WIDTH * MAX_HEIGHT);
         int i;
 
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)
                 item_map[i] = item_stack_new();
+        return item_map;
 }
 
-void item_map_destroy()
+void item_map_destroy(item_stack **item_map)
 {
         int i;
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)
@@ -205,12 +205,12 @@ void item_map_destroy()
 }
 
 /* Update item logic */
-void item_map_update()
+void item_map_update(item_stack **item_map)
 {
         /* Perform any item map updates here, such as pots being broken, etc */
 }
 
-item_stack *item_map_stack_at(vec2 position)
+item_stack *item_map_stack_at(item_stack **item_map, vec2 position)
 {
         int x = floor(position.x / TILE_SIZE);
         int y = floor(position.y / TILE_SIZE);
@@ -223,16 +223,16 @@ item_stack *item_map_stack_at(vec2 position)
         return item_map[x + y * MAX_WIDTH];
 }
 
-void item_map_add_item(int itemtype, vec2 position)
+void item_map_add_item(item_stack **item_map, int itemtype, vec2 position)
 {
         item *item = item_new(itemtype, position);
-        item_stack *s = item_map_stack_at(position);
+        item_stack *s = item_map_stack_at(item_map, position);
         item_stack_push(s, item);
         debug("Adding item");
 }
 
 /* Render everything in the item map */
-void item_map_render(vec2 camera_position)
+void item_map_render(item_stack **item_map, vec2 camera_position)
 {
         int i;
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i) {

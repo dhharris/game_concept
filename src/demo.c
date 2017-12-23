@@ -4,6 +4,7 @@
 #include "corange.h"
 
 #include "character.h"
+#include "gen.h"
 #include "level.h"
 
 #include "demo.h"
@@ -14,18 +15,19 @@ static vec2 camera_position = {0, 0};
 static float level_time = 0;
 
 int frame_counter;
+static int level_counter;
 
 static void reset_game()
 {
-
-        /* Set the starting level to small.level */
-        current_level = asset_get(P("./levels/small.level"));
+        /* Set the level according to the level counter */
+        char path[LEVEL_NAME_LIMIT];
+        level_get_path(path, level_counter);
+        current_level = asset_get(P(path));
         level_time = 0.0;
 
         /* New main character entity */
         character *main_char = entity_get("main_char");
-        main_char->position = vec2_mul(vec2_new(1, 1), TILE_SIZE);
-        main_char->velocity = vec2_zero();
+        main_char->position = current_level->character_position;
 
         /* Deactivate victory and new game UI elements */
         ui_button *victory = ui_elem_get("victory");
@@ -49,6 +51,10 @@ void demo_init()
          * .level */
         asset_handler(level, "level", level_load_file, level_destroy);
 
+        /* generate new levels */
+        int i;
+        for (i = 0; i < NUM_LEVELS; ++i) gen_level();
+
         /* Load Assets */
         folder_load(P("./sprites/"));
         folder_load(P("./backgrounds/"));
@@ -60,9 +66,6 @@ void demo_init()
 
         /* Create our main character */
         character *main_char = entity_new("main_char", character);
-
-        /* Initialize item map */
-        item_map_init();
 
         /* Add some UI elements */
         ui_button *framerate = ui_elem_new("framerate", ui_button);
@@ -165,20 +168,20 @@ void move_character(character *c)
                 debug("%s\n", "Cannot move that way");
         }
 
-
         // testing for items
         if (!vec2_equ(c->position, prev)) {
-                item_map_add_item(ITEMTYPE_NONE, prev);
-                item_stack *head = item_map_stack_at(c->position);
+                item_stack **item_map = current_level->item_map;
+                item_map_add_item(item_map, ITEMTYPE_NONE, prev);
+                item_stack *head = item_map_stack_at(item_map, c->position);
                 debug("I am standing on %d items", item_stack_count(head));
         }
 
+        current_level->character_position = c->position;
 }
 
 /* Update game logic. Returns the status of the game state */
 int demo_update()
 {
-
         character *main_char = entity_get("main_char");
         if (++frame_counter == GAME_TICK) {
                 move_character(main_char);
@@ -209,7 +212,7 @@ int demo_update()
         }
 
         /* Update items logic */
-        item_map_update();
+        item_map_update(current_level->item_map);
 
         /* Check character health. If he dies then end the game */
         if (main_char->health <= 0)
@@ -226,9 +229,18 @@ void gameover_render()
         level_render_background(&l);
 }
 
-void pause_render()
+void pause()
 {
-        // TODO: Implement me!
+        /* Show new game button */
+        ui_button *new_game = ui_elem_get("new_game");
+        new_game->active = 1;
+}
+
+void unpause()
+{
+        /* Hide new game button */
+        ui_button *new_game = ui_elem_get("new_game");
+        new_game->active = 0;
 }
 
 void demo_render()
@@ -238,7 +250,7 @@ void demo_render()
 
         level_render_background(current_level);
         level_render_tiles(current_level, camera_position);
-        item_map_render(camera_position);
+        item_map_render(current_level->item_map, camera_position);
         character_render(entity_get_as("main_char", character),
                          camera_position);
 }
@@ -247,7 +259,6 @@ void demo_finish()
 {
         /* Entity and asset managers will automatically free any remaining
          * objects. */
-        item_map_destroy();
 }
 
 int main(int argc, char **argv)
@@ -271,12 +282,10 @@ int main(int argc, char **argv)
         SDL_Event event;
 
         while (state) {
-
                 /* Frame functions used to monitor frame times, FPS and other */
                 frame_begin();
 
                 while (SDL_PollEvent(&event)) {
-
                         switch (event.type) {
                                 case SDL_KEYUP:
                                         /* Pause on ESCAPE and Screenshot on
@@ -284,16 +293,32 @@ int main(int argc, char **argv)
                                          */
                                         if (event.key.keysym.sym ==
                                             SDLK_ESCAPE) {
-                                                if (state == GAME_STATE_RUNNING)
+                                                if (state ==
+                                                    GAME_STATE_RUNNING) {
+                                                        pause();
                                                         state =
                                                             GAME_STATE_PAUSED;
-                                                else
+                                                } else {
+                                                        unpause();
                                                         state =
                                                             GAME_STATE_RUNNING;
+                                                }
                                         }
                                         if (event.key.keysym.sym ==
                                             SDLK_PRINTSCREEN) {
                                                 graphics_viewport_screenshot();
+                                        }
+                                        if (event.key.keysym.sym == SDLK_0) {
+                                                level_counter = 0;
+                                                reset_game();
+                                        }
+                                        if (event.key.keysym.sym == SDLK_1) {
+                                                level_counter = 1;
+                                                reset_game();
+                                        }
+                                        if (event.key.keysym.sym == SDLK_2) {
+                                                level_counter = 2;
+                                                reset_game();
                                         }
                                         break;
                                 case SDL_QUIT:
@@ -311,13 +336,12 @@ int main(int argc, char **argv)
                 if (state == GAME_STATE_RUNNING) {
                         state = demo_update();
                         ui_update();
-
                         demo_render();
                         ui_render();
-
                 } else if (state == GAME_STATE_PAUSED) {
                         /* Render pause menu */
-                        pause_render();
+                        ui_update();
+                        ui_render();
                 } else if (state == GAME_STATE_GAMEOVER) {
                         /* Render Game Over screen */
                         gameover_render();

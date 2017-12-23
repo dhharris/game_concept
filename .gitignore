@@ -5,6 +5,7 @@
 *.swp
 *.orig
 *.exe
+*.level
 .DS*
 stdout.txt
 stderr.txt

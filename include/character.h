@@ -9,9 +9,7 @@
 
 typedef struct {
         char *name;
-        vec2 velocity;
         vec2 position;
-        float walk_timer;
         int facing_left; // Determine whether we need to invert the texture
         int health;
         item inventory[INVENTORY_SIZE];
@@ -20,7 +18,6 @@ typedef struct {
 character *character_new();
 void character_destroy(character *c);
 
-int is_airborne(character *c);
 void character_update(character *c);
 void character_render(character *c, vec2 camera_position);
 

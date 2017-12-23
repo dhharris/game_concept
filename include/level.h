@@ -5,6 +5,7 @@
 #include "item.h"
 
 #define LEVEL_NAME_LIMIT 32
+#define NUM_LEVELS 32
 
 typedef struct {
         int num_tiles;
@@ -18,11 +19,15 @@ typedef struct {
         int *tile_map;
         vec3 color;
         tile_set *tile_sets;
+        item_stack **item_map;
         char name[LEVEL_NAME_LIMIT];
+        vec2 character_position;
 } level;
 
 #define MAX_WIDTH 512
 #define MAX_HEIGHT 512
+#define LEVEL_SIZE 20
+
 
 #define TILETYPE_NONE 0
 #define TILETYPE_AIR 1
@@ -51,6 +56,7 @@ typedef struct {
 
 #define TILE_SIZE 16 // 16x16 pixel tiles
 
+void level_get_path(char *buf, int num);
 level *level_load_file(const char *filename);
 void level_destroy(level *l);
 

@@ -171,6 +171,12 @@ static int SDL_RWreadline(SDL_RWops *file, char *buffer, int buffersize)
         }
 }
 
+/* Load the num level into buf */
+void level_get_path(char *buf, int num)
+{
+        snprintf(buf, LEVEL_NAME_LIMIT, "./levels/%d.level", num);
+}
+
 level *level_load_file(const char *filename)
 {
         int i;
@@ -182,6 +188,8 @@ level *level_load_file(const char *filename)
         level *l = malloc(sizeof(level));
         l->tile_sets = malloc(sizeof(tile_set) * NUM_TILE_TYPES);
         l->tile_map = calloc(sizeof(int), MAX_WIDTH * MAX_HEIGHT);
+        l->item_map = item_map_init();
+        l->character_position = vec2_zero();
 
         /* Load level name, placing null byte when encountering the . */
         const char *start = filename + strlen(filename);
@@ -206,6 +214,11 @@ level *level_load_file(const char *filename)
                         char c = line[x];
                         int type = char_to_tile(c);
 
+                        /* Character starts at the up stairwell */
+                        if (type == TILETYPE_STAIRS_UP)
+                                l->character_position =
+                                    vec2_mul(vec2_new(x, y), TILE_SIZE);
+
                         l->tile_map[x + y * MAX_WIDTH] = type;
                         tile_counts[type]++;
                 }
@@ -214,6 +227,11 @@ level *level_load_file(const char *filename)
         }
 
         SDL_RWclose(file);
+
+        /* Set character position to 1,1 if no stairs were found in the
+         * level */
+        if (vec2_equ(l->character_position, vec2_zero()))
+                l->character_position = vec2_mul(vec2_new(1, 1), TILE_SIZE);
 
         /* Start from 1, type 0 is none! */
         for (int i = 1; i < NUM_TILE_TYPES; i++) {
@@ -321,6 +339,7 @@ void level_destroy(level *l)
 
         free(l->tile_map);
         free(l->tile_sets);
+        item_map_destroy(l->item_map);
         free(l);
 }
 
