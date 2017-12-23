@@ -1,5 +1,7 @@
-#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 #include "corange.h"
 
@@ -80,11 +82,11 @@ void demo_init()
         ui_button_set_label(health, "Health 100");
         ui_button_disable(health);
 
-        ui_button *time = ui_elem_new("time", ui_button);
-        ui_button_move(time, vec2_new(180, 10));
-        ui_button_resize(time, vec2_new(110, 25));
-        ui_button_set_label(time, "Time 000000");
-        ui_button_disable(time);
+        ui_button *time_but = ui_elem_new("time", ui_button);
+        ui_button_move(time_but, vec2_new(180, 10));
+        ui_button_resize(time_but, vec2_new(110, 25));
+        ui_button_set_label(time_but, "time 000000");
+        ui_button_disable(time_but);
 
         ui_button *victory = ui_elem_new("victory", ui_button);
         ui_button_move(victory, vec2_new(365, 200));
@@ -98,6 +100,9 @@ void demo_init()
         ui_button_set_label(new_game_but, "New Game");
 
         ui_button_set_onclick(new_game_but, on_newgame);
+
+        /* Seed random numbers */
+        srand(time(NULL));
 
         /* Reset all the game variables */
         reset_game();
