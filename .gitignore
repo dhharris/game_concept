@@ -6,7 +6,7 @@
 *.orig
 *.exe
 *.level
-.DS*
+.DS_Store
 stdout.txt
 stderr.txt
 demo
