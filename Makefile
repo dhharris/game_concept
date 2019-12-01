@@ -1,3 +1,5 @@
+CC=gcc
+
 BIN=demo
 
 INCS= -I ./include
