@@ -4,7 +4,7 @@ BIN=demo
 
 INCS= -I ./include
 
-CFLAGS= $(INCS) -std=gnu99 -Wall -Werror -Wno-unused -O3 -g
+CFLAGS= $(INCS) -std=c11 -Wall -Werror -Wno-unused -O2 -g
 C_FILES= $(wildcard src/*.c)
 OBJ_FILES= $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
