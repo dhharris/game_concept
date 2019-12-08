@@ -1,0 +1,8 @@
+[[dependency]]
+package = "github.com/buckaroo-pm/glfw"
+version = "*"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/host-opengl"
+version = "*"
+

@@ -1,0 +1,3 @@
+[cxx]
+  cc = /usr/bin/gcc
+  ld = /usr/bin/gcc

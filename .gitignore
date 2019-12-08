@@ -10,3 +10,10 @@
 stdout.txt
 stderr.txt
 demo
+Corange
+.buckd
+buck-out
+.buckconfig.local
+.buckconfig.d
+buckaroo
+buckaroo_macros.bzl
