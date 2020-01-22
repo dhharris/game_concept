@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "corange.h"
+#include "raylib.h"
 
 #include "character.h"
 #include "gen.h"
