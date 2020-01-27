@@ -2,7 +2,7 @@ CC=clang
 
 BIN=demo
 
-INCS= -I./include -I./raylib/src
+INCS= -I./raylib/src
 
 CFLAGS= $(INCS) -std=c11 -Wall -Werror -Wno-unused -O2 -g
 C_FILES= $(wildcard src/*.c)
