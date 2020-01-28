@@ -27,12 +27,13 @@ static void reset_level()
 //        current_level = asset_get(P(path));
         level_time = 0.0;
 
-        player->position = current_level->character_position;
+//        player->position = current_level->character_position;
 }
 
 void demo_init()
 {
         InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "demo");
+        SetTargetFPS(60);
 
 
         /* generate new levels */
@@ -58,7 +59,7 @@ int demo_update()
         character_update(player);
 
         /* Update items logic */
-        item_map_update(current_level->item_map);
+//        item_map_update(current_level->item_map);
 
         /* Camera follows player */
         camera.target = player->position;
@@ -95,16 +96,15 @@ void demo_render()
         // level_render_tiles(current_level, camera_position);
         // item_map_render(current_level->item_map, camera_position);
 
-        /* Draw the player */
         DrawTexture(
                 player->texture, player->position.x, player->position.y, RED);
 
         EndMode2D();
-
+        /* Draw the player */
         /* Update character ui elements */
         char health_label[11];
         snprintf(health_label, 11, "Health %d", player->health);
-        DrawText(health_label, 190, 200, 20, LIGHTGRAY);
+        DrawText(health_label, 190, 200, 20, DARKGRAY);
 
 
         EndDrawing();

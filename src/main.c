@@ -1,23 +1,14 @@
+#include "demo.h"
 
-#include "raylib.h"
-
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-
-int main(int argc, char **argv)
+int main(void)
 {
-        InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, *argv);
-        SetTargetFPS(60);
-
+        demo_init();
         while (!WindowShouldClose())
         {
-                BeginDrawing();
-                {
-                        ClearBackground(RAYWHITE);
-                        DrawText("I am a game window", 190, 200, 20, LIGHTGRAY);
-                }
-                EndDrawing();
+                demo_update();
+                demo_render();
         }
         CloseWindow();
+        demo_destroy();
         return 0;
 }

@@ -10,7 +10,6 @@ typedef struct {
         int num_tiles;
         GLuint positions_buffer;
         GLuint texcoords_buffer;
-        asset_hndl mat;
 } tile_set;
 
 typedef struct {

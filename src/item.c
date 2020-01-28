@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <assert.h>
+
+#include "raymath.h"
 
 #include "item.h"
 #include "level.h"
@@ -6,12 +9,12 @@
 item *item_empty()
 {
         item *item = malloc(sizeof(item));
-        item->position = vec2_zero();
+        item->position = Vector2Zero();
         item->itemtype = ITEMTYPE_NONE;
         return item;
 }
 
-item *item_new(int itemtype, vec2 position)
+item *item_new(int itemtype, Vector2 position)
 {
         item *item = item_empty();
         item->itemtype = itemtype;
@@ -105,84 +108,85 @@ const char *item_get_description(int itemtype)
         }
 }
 
-static texture *item_get_texture(int itemtype)
+Texture2D *item_get_texture(int itemtype)
 {
-        texture *t;
-        switch (itemtype) {
-                case ITEMTYPE_COINS:
-                        t = asset_get(P("./sprites/sprite-13-13.dds"));
-                        break;
-                case ITEMTYPE_CHEST:
-                        t = asset_get(P("./sprites/sprite-13-6.dds"));
-                        break;
-                case ITEMTYPE_URN:
-                        t = asset_get(P("./sprites/sprite-13-8.dds"));
-                        break;
-                case ITEMTYPE_URN_BROKEN:
-                        t = asset_get(P("./sprites/sprite-13-9.dds"));
-                        break;
-                case ITEMTYPE_SWORD:
-                case ITEMTYPE_LONGSWORD:
-                case ITEMTYPE_GREATSWORD:
-                        t = asset_get(P("./sprites/sprite-17-1.dds"));
-                        break;
-                case ITEMTYPE_SPEAR:
-                        t = asset_get(P("./sprites/sprite-17-4.dds"));
-                        break;
-                default:
-                        t = asset_get(P("./sprites/sprite-0-13.dds"));
-                        break;
-        }
-        return t;
+        // texture *t;
+        // switch (itemtype) {
+        //         case ITEMTYPE_COINS:
+        //                 t = asset_get(P("./sprites/sprite-13-13.dds"));
+        //                 break;
+        //         case ITEMTYPE_CHEST:
+        //                 t = asset_get(P("./sprites/sprite-13-6.dds"));
+        //                 break;
+        //         case ITEMTYPE_URN:
+        //                 t = asset_get(P("./sprites/sprite-13-8.dds"));
+        //                 break;
+        //         case ITEMTYPE_URN_BROKEN:
+        //                 t = asset_get(P("./sprites/sprite-13-9.dds"));
+        //                 break;
+        //         case ITEMTYPE_SWORD:
+        //         case ITEMTYPE_LONGSWORD:
+        //         case ITEMTYPE_GREATSWORD:
+        //                 t = asset_get(P("./sprites/sprite-17-1.dds"));
+        //                 break;
+        //         case ITEMTYPE_SPEAR:
+        //                 t = asset_get(P("./sprites/sprite-17-4.dds"));
+        //                 break;
+        //         default:
+        //                 t = asset_get(P("./sprites/sprite-0-13.dds"));
+        //                 break;
+        // }
+        // return t;
+        return 0;
 }
 
-void item_render_one(item *item, vec2 camera_position)
+void item_render_one(item *item, Vector2 camera_position)
 {
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(camera_position.x - graphics_viewport_width() / 2,
-                camera_position.x + graphics_viewport_width() / 2,
-                -camera_position.y + graphics_viewport_height() / 2,
-                -camera_position.y - graphics_viewport_height() / 2, -1, 1);
+        // glMatrixMode(GL_PROJECTION);
+        // glPushMatrix();
+        // glLoadIdentity();
+        // glOrtho(camera_position.x - graphics_viewport_width() / 2,
+        //         camera_position.x + graphics_viewport_width() / 2,
+        //         -camera_position.y + graphics_viewport_height() / 2,
+        //         -camera_position.y - graphics_viewport_height() / 2, -1, 1);
 
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
+        // glMatrixMode(GL_MODELVIEW);
+        // glPushMatrix();
+        // glLoadIdentity();
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // glEnable(GL_BLEND);
+        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glEnable(GL_TEXTURE_2D);
+        // glEnable(GL_TEXTURE_2D);
 
-        texture *item_tex = item_get_texture(item->itemtype);
-        glBindTexture(GL_TEXTURE_2D, texture_handle(item_tex));
+        // texture *item_tex = item_get_texture(item->itemtype);
+        // glBindTexture(GL_TEXTURE_2D, texture_handle(item_tex));
 
-        glBegin(GL_TRIANGLES);
-        glTexCoord2f(0, 1);
-        glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
-        glTexCoord2f(0, 0);
-        glVertex3f(item->position.x, item->position.y, 0);
-        glTexCoord2f(1, 0);
-        glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
+        // glBegin(GL_TRIANGLES);
+        // glTexCoord2f(0, 1);
+        // glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
+        // glTexCoord2f(0, 0);
+        // glVertex3f(item->position.x, item->position.y, 0);
+        // glTexCoord2f(1, 0);
+        // glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
 
-        glTexCoord2f(0, 1);
-        glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
-        glTexCoord2f(1, 1);
-        glVertex3f(item->position.x + TILE_SIZE, item->position.y + TILE_SIZE,
-                   0);
-        glTexCoord2f(1, 0);
-        glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
-        glEnd();
+        // glTexCoord2f(0, 1);
+        // glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
+        // glTexCoord2f(1, 1);
+        // glVertex3f(item->position.x + TILE_SIZE, item->position.y + TILE_SIZE,
+        //            0);
+        // glTexCoord2f(1, 0);
+        // glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
+        // glEnd();
 
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
+        // glDisable(GL_TEXTURE_2D);
+        // glDisable(GL_BLEND);
 
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
+        // glMatrixMode(GL_PROJECTION);
+        // glPopMatrix();
 
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
+        // glMatrixMode(GL_MODELVIEW);
+        // glPopMatrix();
 }
 
 item_stack **item_map_init()
@@ -210,7 +214,7 @@ void item_map_update(item_stack **item_map)
         /* Perform any item map updates here, such as pots being broken, etc */
 }
 
-item_stack *item_map_stack_at(item_stack **item_map, vec2 position)
+item_stack *item_map_stack_at(item_stack **item_map, Vector2 position)
 {
         int x = floor(position.x / TILE_SIZE);
         int y = floor(position.y / TILE_SIZE);
@@ -223,16 +227,15 @@ item_stack *item_map_stack_at(item_stack **item_map, vec2 position)
         return item_map[x + y * MAX_WIDTH];
 }
 
-void item_map_add_item(item_stack **item_map, int itemtype, vec2 position)
+void item_map_add_item(item_stack **item_map, int itemtype, Vector2 position)
 {
         item *item = item_new(itemtype, position);
         item_stack *s = item_map_stack_at(item_map, position);
         item_stack_push(s, item);
-        debug("Adding item");
 }
 
 /* Render everything in the item map */
-void item_map_render(item_stack **item_map, vec2 camera_position)
+void item_map_render(item_stack **item_map, Vector2 camera_position)
 {
         int i;
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i) {

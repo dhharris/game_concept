@@ -10,7 +10,7 @@ character *character_new()
         c->facing_left = 0;
         c->health = 100;
         c->name = "Charles";
-        c->texture = LoadTexture("sprites/sprite-0-2.dds");
+        c->texture = LoadTexture("sprites/character.png");
         return c;
 }
 
