@@ -1,8 +1,8 @@
 #include "demo.h"
 
-int main(void)
+int main(int argc, char **argv)
 {
-        demo_init();
+        demo_init(argv[0]);
         while (!WindowShouldClose())
         {
                 demo_update();

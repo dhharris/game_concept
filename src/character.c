@@ -8,8 +8,8 @@ character *character_new()
         character *c = malloc(sizeof(character));
         c->position = Vector2Zero();
         c->facing_left = 0;
-        c->health = 100;
-        c->name = "Charles";
+        c->health = 99;
+        c->name = "Steve";
         c->texture = LoadTexture("sprites/character.png");
         return c;
 }
