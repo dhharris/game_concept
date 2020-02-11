@@ -48,6 +48,7 @@ void demo_init(char *name)
 
         // Initialize camera
         camera.target = player->position;
+        // Center of the screen
         camera.offset = (Vector2){ WINDOW_WIDTH/2, WINDOW_HEIGHT/2 };
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
@@ -59,7 +60,7 @@ int demo_update()
         // Update player location
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
                 // TODO: Fix mouse movement
-                player->position = GetMousePosition();
+                // player->position = GetMousePosition();
         }
         // Keyboard movement
         if (IsKeyPressed(KEY_UP))
