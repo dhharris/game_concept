@@ -6,4 +6,3 @@
 #include "common.h"
 
 void gen_level();
-

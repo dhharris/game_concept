@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #include "raymath.h"
 
@@ -173,7 +173,8 @@ void item_render_one(item *item, Vector2 camera_position)
         // glTexCoord2f(0, 1);
         // glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
         // glTexCoord2f(1, 1);
-        // glVertex3f(item->position.x + TILE_SIZE, item->position.y + TILE_SIZE,
+        // glVertex3f(item->position.x + TILE_SIZE, item->position.y +
+        // TILE_SIZE,
         //            0);
         // glTexCoord2f(1, 0);
         // glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
@@ -191,7 +192,8 @@ void item_render_one(item *item, Vector2 camera_position)
 
 item_stack **item_map_init()
 {
-        item_stack **item_map = calloc(sizeof(item_stack *), MAX_WIDTH * MAX_HEIGHT);
+        item_stack **item_map =
+            calloc(sizeof(item_stack *), MAX_WIDTH * MAX_HEIGHT);
         int i;
 
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)

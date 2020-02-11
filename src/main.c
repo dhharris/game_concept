@@ -3,8 +3,7 @@
 int main(int argc, char **argv)
 {
         demo_init(argv[0]);
-        while (!WindowShouldClose())
-        {
+        while (!WindowShouldClose()) {
                 demo_update();
                 demo_render();
         }

@@ -26,7 +26,6 @@ typedef struct {
 #define MAX_HEIGHT 512
 #define LEVEL_SIZE 20
 
-
 #define TILETYPE_NONE 0
 #define TILETYPE_AIR 1
 

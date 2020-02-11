@@ -1,8 +1,8 @@
+#include "raylib.h"
+#include "raymath.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "raylib.h"
-#include "raymath.h"
 
 #include "character.h"
 #include "gen.h"
@@ -15,7 +15,7 @@ static level *current_level = NULL;
 static Vector2 camera_position = {0, 0};
 static float level_time = 0;
 static character *player = NULL;
-static Camera2D camera = { 0 };
+static Camera2D camera = {0};
 
 static int level_counter;
 
@@ -35,7 +35,6 @@ void demo_init(char *name)
         InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, name);
         SetTargetFPS(60);
 
-
         // generate new levels
         // int i;
         // for (i = 0; i < NUM_LEVELS; ++i) gen_level();
@@ -49,7 +48,7 @@ void demo_init(char *name)
         // Initialize camera
         camera.target = player->position;
         // Center of the screen
-        camera.offset = (Vector2){ WINDOW_WIDTH/2, WINDOW_HEIGHT/2 };
+        camera.offset = (Vector2){WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
 }
@@ -72,12 +71,12 @@ int demo_update()
         else if (IsKeyPressed(KEY_RIGHT))
                 player->position.x += TILE_SIZE;
         else if (IsKeyPressed(KEY_R))
-                player->position = (Vector2) {0,0};
+                player->position = (Vector2){0, 0};
 
         character_update(player);
 
         // Update items logic
-//        item_map_update(current_level->item_map);
+        //        item_map_update(current_level->item_map);
 
         // Camera follows player
         camera.target = player->position;
@@ -86,7 +85,6 @@ int demo_update()
         if (player->health <= 0)
                 return GAME_STATE_GAMEOVER;
         return GAME_STATE_RUNNING;
-
 }
 
 void gameover_render()
@@ -118,9 +116,8 @@ void demo_render()
         DrawRectangle(0, 0, 10 * TILE_SIZE, 10 * TILE_SIZE, RED);
 
         // Draw the player
-        DrawTexture(
-                player->texture, player->position.x, player->position.y, GREEN);
-
+        DrawTexture(player->texture, player->position.x, player->position.y,
+                    GREEN);
 
         EndMode2D();
 

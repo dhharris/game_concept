@@ -18,14 +18,14 @@ typedef struct item_node {
 
 /* Item types */
 #define ITEMTYPE_NONE 0
-#define ITEMTYPE_COINS 1 // Lovely money!
-#define ITEMTYPE_CHEST 2 // I wonder what's inside?
-#define ITEMTYPE_URN 3   // A ceramic vessel
-#define ITEMTYPE_URN_BROKEN 4   // This was used to hold things
-#define ITEMTYPE_SWORD 5 // A basic melee weapon
-#define ITEMTYPE_LONGSWORD 6 // a sword with a longer grip
+#define ITEMTYPE_COINS 1      // Lovely money!
+#define ITEMTYPE_CHEST 2      // I wonder what's inside?
+#define ITEMTYPE_URN 3        // A ceramic vessel
+#define ITEMTYPE_URN_BROKEN 4 // This was used to hold things
+#define ITEMTYPE_SWORD 5      // A basic melee weapon
+#define ITEMTYPE_LONGSWORD 6  // a sword with a longer grip
 #define ITEMTYPE_GREATSWORD 7 // a large sword intended for two-handed use
-#define ITEMTYPE_SPEAR 8 // long and pointy
+#define ITEMTYPE_SPEAR 8      // long and pointy
 
 #define NUM_ITEM_TYPES 9 // One more than last item #
 

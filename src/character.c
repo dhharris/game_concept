@@ -1,7 +1,7 @@
-#include <stdlib.h>
 #include "character.h"
 #include "level.h"
 #include "raymath.h"
+#include <stdlib.h>
 
 character *character_new()
 {
