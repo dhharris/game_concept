@@ -129,7 +129,7 @@ void demo_render()
         snprintf(health_label, 10, "Health %2d", player->health);
         DrawText(health_label, 10, 10, 20, DARKGRAY);
 
-        DrawFPS(WINDOW_WIDTH - 100, 10);
+        DrawFPS(WINDOW_WIDTH - 85, 10);
 
         EndDrawing();
 }
