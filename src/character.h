@@ -12,6 +12,10 @@ typedef struct {
         int facing_left; // Determine whether we need to invert the texture
         int health;
         item inventory[INVENTORY_SIZE];
+
+        // Image and texture data
+        Image spritesheet;
+        Vector2 sprite_index;
         Texture2D texture;
 } character;
 

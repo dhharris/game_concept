@@ -51,8 +51,6 @@ typedef struct {
 
 #define NUM_TILE_TYPES 18 // Always one more than the last tiletype
 
-#define TILE_SIZE 16 // 16x16 pixel tiles
-
 void level_get_path(char *buf, int num);
 level *level_load_file(const char *filename);
 void level_destroy(level *l);

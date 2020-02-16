@@ -113,7 +113,7 @@ void demo_render()
         // item_map_render(current_level->item_map, camera_position);
 
         // Test camera movement by drawing line
-        DrawRectangle(0, 0, 10 * TILE_SIZE, 10 * TILE_SIZE, RED);
+        DrawRectangle(0, 0, 10 * TILE_SIZE, 10 * TILE_SIZE, BLUE);
 
         // Draw the player
         DrawTexture(player->texture, player->position.x, player->position.y,
