@@ -59,19 +59,19 @@ int demo_update()
         // Update player location
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
                 // TODO: Fix mouse movement
-                // player->position = GetMousePosition();
+                // player->new_position = GetMousePosition();
         }
         // Keyboard movement
         if (IsKeyPressed(KEY_UP))
-                player->position.y -= TILE_SIZE;
+                player->new_position.y -= TILE_SIZE;
         else if (IsKeyPressed(KEY_DOWN))
-                player->position.y += TILE_SIZE;
+                player->new_position.y += TILE_SIZE;
         else if (IsKeyPressed(KEY_LEFT))
-                player->position.x -= TILE_SIZE;
+                player->new_position.x -= TILE_SIZE;
         else if (IsKeyPressed(KEY_RIGHT))
-                player->position.x += TILE_SIZE;
+                player->new_position.x += TILE_SIZE;
         else if (IsKeyPressed(KEY_R))
-                player->position = (Vector2){0, 0};
+                player->new_position = (Vector2){0, 0};
 
         character_update(player);
 
@@ -116,8 +116,7 @@ void demo_render()
         DrawRectangle(0, 0, 10 * TILE_SIZE, 10 * TILE_SIZE, BLUE);
 
         // Draw the player
-        DrawTexture(player->texture, player->position.x, player->position.y,
-                    GREEN);
+        DrawTextureV(player->texture, player->position, WHITE);
 
         EndMode2D();
 

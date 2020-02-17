@@ -9,6 +9,7 @@
 typedef struct {
         char *name;
         Vector2 position;
+        Vector2 new_position;
         int facing_left; // Determine whether we need to invert the texture
         int health;
         item inventory[INVENTORY_SIZE];
