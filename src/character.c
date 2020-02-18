@@ -23,7 +23,7 @@ character *character_new()
         c->health = 99;
         c->name = "Steve";
         // Sprite fields
-        c->spritesheet = LoadImage("sprites/hero.png");
+        c->spritesheet = LoadImage("sprites/sprite-0-0.png");
         c->sprite_index = Vector2Zero();
         Image tmp = get_sprite_from_sheet(c->spritesheet, c->sprite_index);
         c->texture = LoadTextureFromImage(tmp);
