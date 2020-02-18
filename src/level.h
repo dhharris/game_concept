@@ -6,26 +6,6 @@
 #define LEVEL_NAME_LIMIT 32
 #define NUM_LEVELS 32
 
-typedef struct {
-        int num_tiles;
-        GLuint positions_buffer;
-        GLuint texcoords_buffer;
-} tile_set;
-
-typedef struct {
-        int num_tile_sets;
-        int *tile_map;
-        Vector3 color;
-        tile_set *tile_sets;
-        item_stack **item_map;
-        char name[LEVEL_NAME_LIMIT];
-        Vector2 character_position;
-} level;
-
-#define MAX_WIDTH 512
-#define MAX_HEIGHT 512
-#define LEVEL_SIZE 20
-
 #define TILETYPE_NONE 0
 #define TILETYPE_AIR 1
 
@@ -51,14 +31,28 @@ typedef struct {
 
 #define NUM_TILE_TYPES 18 // Always one more than the last tiletype
 
+typedef struct {
+        int num_tile_sets;
+        int *tile_map; // Stores tile types
+        Texture texture_map[NUM_TILE_TYPES]; // Stores tile textures indexed
+                                             // by tile type
+        Color color; // Background color
+        item_stack **item_map;
+        char name[LEVEL_NAME_LIMIT];
+        Vector2 character_position;
+} level;
+
+#define MAX_WIDTH 512
+#define MAX_HEIGHT 512
+#define LEVEL_SIZE 20
+
 void level_get_path(char *buf, int num);
 level *level_load_file(const char *filename);
 void level_destroy(level *l);
 
 void level_render_background(level *l);
-void level_render_tiles(level *l, Vector2 camera_position);
+void level_render_tiles(level *l);
 
 int level_tile_at(level *l, Vector2 position);
-Vector2 level_tile_position(level *l, int x, int y);
 
 int tile_has_collision(int tiletype);
