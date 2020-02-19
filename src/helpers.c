@@ -1,5 +1,10 @@
 #include "helpers.h"
 
+int Vector2Eq(Vector2 a, Vector2 b)
+{
+        return a.x == b.x && a.y == b.y;
+}
+
 int ColorEq(Color a, Color b)
 {
         if (a.r != b.r)

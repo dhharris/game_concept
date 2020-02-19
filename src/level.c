@@ -218,9 +218,12 @@ void level_render_tiles(level *l)
         for (int x = 0; x < LEVEL_SIZE; ++x) {
                 for (int y = 0; y < LEVEL_SIZE; ++y) {
                         int type = l->tile_map[x + y * MAX_WIDTH];
-                        DrawTextureV(l->texture_map[type],
-                                     Vector2Scale((Vector2){x, y}, TILE_SIZE),
-                                     tile_get_color(type));
+                        if (type != TILETYPE_NONE) {
+                                DrawTextureV(
+                                    l->texture_map[type],
+                                    Vector2Scale((Vector2){x, y}, TILE_SIZE),
+                                    tile_get_color(type));
+                        }
                 }
         }
 }

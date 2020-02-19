@@ -4,7 +4,7 @@
 #include "item.h"
 
 #define LEVEL_NAME_LIMIT 32
-#define NUM_LEVELS 32
+#define NUM_LEVELS 2
 
 #define TILETYPE_NONE 0
 #define TILETYPE_AIR 1

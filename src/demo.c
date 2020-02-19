@@ -1,8 +1,10 @@
-#include "raylib.h"
-#include "raymath.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "raylib.h"
+#include "raymath.h"
+#include "utils.h"
 
 #include "character.h"
 #include "gen.h"
@@ -24,26 +26,23 @@ static void reset_level()
         // Set the level according to the level counter
         char path[LEVEL_NAME_LIMIT];
         level_get_path(path, level_counter);
-        // current_level = asset_get(P(path));
+        current_level = level_load_file(path);
         level_time = 0.0;
 
-        // player->position = current_level->character_position;
+        player->position = player->new_position =
+            current_level->character_position;
 }
 
 void demo_init(char *name)
 {
         InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, name);
-        SetTargetFPS(60);
+        SetTargetFPS(FPS);
 
         // generate new levels
-        // int i;
-        // for (i = 0; i < NUM_LEVELS; ++i) gen_level();
+        for (int i = 0; i < NUM_LEVELS; ++i) gen_level();
 
         // Create our main character
         player = character_new();
-
-        // Reset all the game variables
-        reset_level();
 
         // Initialize camera
         camera.target = player->position;
@@ -51,6 +50,9 @@ void demo_init(char *name)
         camera.offset = (Vector2){WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
+
+        // Reset all the game variables for the current level
+        reset_level();
 }
 
 // Update game logic. Returns the status of the game state
@@ -81,6 +83,8 @@ int demo_update()
         // Camera follows player
         camera.target = player->position;
 
+        level_time += (float) 1 / FPS;
+
         // Check character health. If he dies then end the game
         if (player->health <= 0)
                 return GAME_STATE_GAMEOVER;
@@ -108,12 +112,9 @@ void demo_render()
         ClearBackground(RAYWHITE);
         BeginMode2D(camera);
 
-        // level_render_background(current_level);
-        // level_render_tiles(current_level, camera_position);
+        level_render_background(current_level);
+        level_render_tiles(current_level);
         // item_map_render(current_level->item_map, camera_position);
-
-        // Test camera movement by drawing line
-        DrawRectangle(0, 0, 20 * TILE_SIZE, 20 * TILE_SIZE, BLUE);
 
         // Draw the player
         DrawTextureV(player->texture, player->position, WHITE);
@@ -124,6 +125,10 @@ void demo_render()
         char health_label[10];
         snprintf(health_label, 10, "Health %2d", player->health);
         DrawText(health_label, 10, 10, 20, DARKGRAY);
+
+        char time_label[10];
+        snprintf(time_label, 10, "Time %2.2f", level_time);
+        DrawText(time_label, WINDOW_WIDTH / 2 - 20, 10, 20, DARKGRAY);
 
         DrawFPS(WINDOW_WIDTH - 85, 10);
 
