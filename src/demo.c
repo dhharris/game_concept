@@ -71,7 +71,8 @@ int demo_update()
         } else if (IsKeyPressed(KEY_RIGHT)) {
                 player->new_position.x += TILE_SIZE;
         } else if (IsKeyPressed(KEY_R)) {
-                player->new_position = (Vector2){0, 0};
+                player->new_position = current_level->starting_position;
+                level_time = 0.0;
         } else if (IsKeyPressed(KEY_E)) { // Perform player actions
                 // Are we performing an action that causes level reset?
                 // stairs, teleports, etc.
