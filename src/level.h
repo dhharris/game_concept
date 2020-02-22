@@ -33,26 +33,26 @@
 
 typedef struct {
         int num_tile_sets;
-        int *tile_map; // Stores tile types
+        int *tile_map;                       // Stores tile types
         Texture texture_map[NUM_TILE_TYPES]; // Stores tile textures indexed
                                              // by tile type
-        Color color; // Background color
+        Color color;                         // Background color
         item_stack **item_map;
         char name[LEVEL_NAME_LIMIT];
-        Vector2 character_position;
+        Vector2 starting_position;
 } level;
 
 #define MAX_WIDTH 512
 #define MAX_HEIGHT 512
 #define LEVEL_SIZE 20
 
-void level_get_path(char *buf, int num);
-level *level_load_file(const char *filename);
+level *level_load();
 void level_destroy(level *l);
-
 void level_render_background(level *l);
 void level_render_tiles(level *l);
-
+int tile_has_collision(int tiletype);
+int level_should_reset(level *l, Vector2 character_position);
 int level_tile_at(level *l, Vector2 position);
 
-int tile_has_collision(int tiletype);
+void level_get_path(char *buf, int id);
+level *level_load_file(const char *filename);

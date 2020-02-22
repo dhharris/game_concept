@@ -8,29 +8,26 @@
 
 #include "character.h"
 #include "gen.h"
+#include "helpers.h"
 #include "level.h"
 
 #include "demo.h"
 
 // Some game state variables
-static level *current_level = NULL;
-static Vector2 camera_position = {0, 0};
-static float level_time = 0;
-static character *player = NULL;
-static Camera2D camera = {0};
-
-static int level_counter;
+static character *player;
+static level *current_level;
+static float level_time;
+static Camera2D camera;
+static Vector2 camera_position;
 
 static void reset_level()
 {
-        // Set the level according to the level counter
-        char path[LEVEL_NAME_LIMIT];
-        level_get_path(path, level_counter);
-        current_level = level_load_file(path);
+        level_destroy(current_level);
+        current_level = level_load();
         level_time = 0.0;
 
         player->position = player->new_position =
-            current_level->character_position;
+            current_level->starting_position;
 }
 
 void demo_init(char *name)
@@ -39,6 +36,7 @@ void demo_init(char *name)
         SetTargetFPS(FPS);
 
         // generate new levels
+        // TODO: Move this to gen.c?
         for (int i = 0; i < NUM_LEVELS; ++i) gen_level();
 
         // Create our main character
@@ -64,16 +62,23 @@ int demo_update()
                 // player->new_position = GetMousePosition();
         }
         // Keyboard movement
-        if (IsKeyPressed(KEY_UP))
+        if (IsKeyPressed(KEY_UP)) {
                 player->new_position.y -= TILE_SIZE;
-        else if (IsKeyPressed(KEY_DOWN))
+        } else if (IsKeyPressed(KEY_DOWN)) {
                 player->new_position.y += TILE_SIZE;
-        else if (IsKeyPressed(KEY_LEFT))
+        } else if (IsKeyPressed(KEY_LEFT)) {
                 player->new_position.x -= TILE_SIZE;
-        else if (IsKeyPressed(KEY_RIGHT))
+        } else if (IsKeyPressed(KEY_RIGHT)) {
                 player->new_position.x += TILE_SIZE;
-        else if (IsKeyPressed(KEY_R))
+        } else if (IsKeyPressed(KEY_R)) {
                 player->new_position = (Vector2){0, 0};
+        } else if (IsKeyPressed(KEY_E)) { // Perform player actions
+                // Are we performing an action that causes level reset?
+                // stairs, teleports, etc.
+                if (level_should_reset(current_level, player->position)) {
+                        reset_level();
+                }
+        }
 
         character_update(player);
 
@@ -83,7 +88,7 @@ int demo_update()
         // Camera follows player
         camera.target = player->position;
 
-        level_time += (float) 1 / FPS;
+        level_time += (float)1 / FPS;
 
         // Check character health. If he dies then end the game
         if (player->health <= 0)
@@ -141,6 +146,7 @@ void demo_destroy()
         int i;
         char path[LEVEL_NAME_LIMIT];
 
+        /* Remove level files */
         for (i = 0; i < NUM_LEVELS; ++i) {
                 level_get_path(path, i);
                 remove(path);

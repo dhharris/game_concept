@@ -9,6 +9,10 @@
 
 #include "level.h"
 
+static int CURRENT_LEVEL_ID; // Level that the player is on
+static int GOING_DOWN = 1;   // Whether the player is going down
+static int tile_counts[NUM_TILE_TYPES];
+
 Texture2D tile_get_texture(int tiletype)
 {
         switch (tiletype) {
@@ -122,12 +126,10 @@ static int char_to_tile(char c)
         }
 }
 
-static int tile_counts[NUM_TILE_TYPES];
-
 /* Load the num level into buf */
-void level_get_path(char *buf, int num)
+void level_get_path(char *buf, int id)
 {
-        snprintf(buf, LEVEL_NAME_LIMIT, "./levels/%d.level", num);
+        snprintf(buf, LEVEL_NAME_LIMIT, "./levels/%d.level", id);
 }
 
 level *level_load_file(const char *filename)
@@ -135,7 +137,7 @@ level *level_load_file(const char *filename)
         FILE *file = fopen(filename, "r");
 
         if (!file) {
-                TRACELOG(LOG_ERROR, "Failed to open file: %s", filename);
+                fprintf(stderr, "Failed to open file: %s", filename);
                 return NULL;
         }
 
@@ -145,29 +147,37 @@ level *level_load_file(const char *filename)
         level *l = malloc(sizeof(level));
         l->tile_map = malloc(sizeof(int) * MAX_WIDTH * MAX_HEIGHT);
         l->item_map = item_map_init();
-        l->character_position = Vector2Zero();
 
         int y = 0;
         int x = 0;
-        char *line;
+        char *line = 0;
         size_t linecap = 0;
         ssize_t linelen;
+        Vector2 stair_up_position = Vector2Zero();
+        Vector2 stair_down_position = Vector2Zero();
         while ((linelen = getline(&line, &linecap, file)) > 0) {
                 for (x = 0; x < linelen; x++) {
                         char c = line[x];
                         int type = char_to_tile(c);
 
-                        /* Character starts at the up stairwell */
-                        if (type == TILETYPE_STAIRS_UP)
-                                l->character_position =
+                        if (type == TILETYPE_STAIRS_UP) {
+                                stair_up_position =
                                     Vector2Scale((Vector2){x, y}, TILE_SIZE);
+                        } else if (type == TILETYPE_STAIRS_DOWN) {
+                                stair_down_position =
+                                    Vector2Scale((Vector2){x, y}, TILE_SIZE);
+                        }
 
                         l->tile_map[x + y * MAX_WIDTH] = type;
                         tile_counts[type]++;
                 }
                 ++y;
         }
+        // Determine which stairwell we arrive at upon loading level
+        l->starting_position =
+            GOING_DOWN ? stair_up_position : stair_down_position;
 
+        free(line);
         fclose(file);
 
         // Populate tile textures used in this level
@@ -195,8 +205,18 @@ level *level_load_file(const char *filename)
         return l;
 }
 
+level *level_load()
+{
+        char path[LEVEL_NAME_LIMIT];
+        level_get_path(path, CURRENT_LEVEL_ID);
+        return level_load_file(path);
+}
+
 void level_destroy(level *l)
 {
+        if (l == 0) {
+                return;
+        }
         free(l->tile_map);
         item_map_destroy(l->item_map);
         for (int i = 0; i < NUM_TILE_TYPES; i++) {
@@ -239,4 +259,28 @@ int level_tile_at(level *l, Vector2 position)
         assert(y < MAX_HEIGHT);
 
         return l->tile_map[x + y * MAX_WIDTH];
+}
+
+int change_level(int delta)
+{
+        int new_level = CURRENT_LEVEL_ID + delta;
+        if (new_level >= 0 && new_level < NUM_LEVELS) {
+                GOING_DOWN = (delta > 0) ? 1 : 0;
+                CURRENT_LEVEL_ID = new_level;
+                return 1;
+        }
+        return 0;
+}
+
+/* Tell the main loop when to reset the level */
+int level_should_reset(level *l, Vector2 character_position)
+{
+        switch (level_tile_at(l, character_position)) {
+                case TILETYPE_STAIRS_UP:
+                        return change_level(-1);
+                case TILETYPE_STAIRS_DOWN:
+                        return change_level(1);
+                default:
+                        return 0;
+        }
 }
