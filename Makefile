@@ -4,7 +4,7 @@ BIN=demo
 
 INCS= -I./raylib/src
 
-CFLAGS= $(INCS) -std=c11 -Wall -Werror -Wno-unused -O2 -g
+CFLAGS= $(INCS) -std=c11 -Wall -Werror -Wno-unused -O2
 C_FILES= $(wildcard src/*.c)
 OBJ_FILES= $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
@@ -27,8 +27,13 @@ ifeq ($(findstring MINGW,$(PLATFORM)),MINGW)
 	LFLAGS= ../../corange.res -lcorange -lmingw32 -lSDL2main -lSDL2 -lSDL2_Mixer -lSDL2_Net -lopengl32
 endif
 
+all: $(OUT)
+debug: clean # Recompile everything for debug builds
+debug: CFLAGS += -g -fsanitize=address -fno-omit-frame-pointer
+debug: $(OUT)
+
 $(OUT): $(OBJ_FILES)
-	$(CC) -g $(OBJ_FILES) $(LFLAGS) -o $@
+	$(CC) $(CFLAGS) -g $(OBJ_FILES) $(LFLAGS) -o $@
 
 obj/%.o: src/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
