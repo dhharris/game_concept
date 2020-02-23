@@ -16,6 +16,10 @@ make
 ```
 make
 ```
+If you want to compile with debug symbols and [asan](https://clang.llvm.org/docs/AddressSanitizer.html)
+```
+make debug
+```
 
 ### Running
 ```
