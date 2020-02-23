@@ -79,12 +79,15 @@ int demo_update()
                 if (level_should_reset(current_level, player->position)) {
                         reset_level();
                 }
+        } else if (IsKeyPressed(KEY_Q)) { // Drop an item
+                item_map_add_item(current_level->item_map, ITEMTYPE_COINS,
+                                  player->position);
         }
 
         character_update(player);
 
         // Update items logic
-        //        item_map_update(current_level->item_map);
+        item_map_update(current_level->item_map);
 
         // Camera follows player
         camera.target = player->position;
@@ -120,7 +123,7 @@ void demo_render()
 
         level_render_background(current_level);
         level_render_tiles(current_level);
-        // item_map_render(current_level->item_map, camera_position);
+        item_map_render(current_level->item_map);
 
         // Draw the player
         DrawTextureV(player->texture, player->position, WHITE);

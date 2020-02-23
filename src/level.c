@@ -137,9 +137,12 @@ level *level_load_file(const char *filename)
         FILE *file = fopen(filename, "r");
 
         if (!file) {
-                fprintf(stderr, "Failed to open file: %s", filename);
+                TraceLog(LOG_ERROR, "[%s] Failed to open file: %s", __FILE__,
+                         filename);
                 return NULL;
         }
+
+        TraceLog(LOG_INFO, "[%s] Loading level: %s", __FILE__, filename);
 
         // Reset tile counts
         memset(tile_counts, 0, sizeof(tile_counts));

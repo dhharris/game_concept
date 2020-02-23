@@ -45,7 +45,7 @@ int item_stack_count(item_stack *head);
 item_stack **item_map_init();
 void item_map_destroy(item_stack **item_map);
 void item_map_update(item_stack **item_map);
-void item_map_render(item_stack **item_map, Vector2 camera_position);
+void item_map_render(item_stack **item_map);
 item_stack *item_map_stack_at(item_stack **item_map, Vector2 position);
 void item_map_add_item(item_stack **item_map, int itemtype, Vector2 position);
 
