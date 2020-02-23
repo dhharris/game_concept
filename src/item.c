@@ -1,17 +1,27 @@
+#include <assert.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "raymath.h"
+#include "utils.h"
 
 #include "item.h"
 #include "level.h"
 
+// This is only populated if an item needs to be rendered, i.e.
+// item_counts[ITEM_TYPE] is non-zero
+static Texture2D item_texture_map[NUM_ITEM_TYPES];
+static int item_counts[NUM_ITEM_TYPES];
+
 item *item_empty()
 {
         item *item = malloc(sizeof(item));
-        item->position = vec2_zero();
+        item->position = Vector2Zero();
         item->itemtype = ITEMTYPE_NONE;
         return item;
 }
 
-item *item_new(int itemtype, vec2 position)
+item *item_new(int itemtype, Vector2 position)
 {
         item *item = item_empty();
         item->itemtype = itemtype;
@@ -105,103 +115,61 @@ const char *item_get_description(int itemtype)
         }
 }
 
-static texture *item_get_texture(int itemtype)
+Texture2D get_item_texture(int itemtype)
 {
-        texture *t;
         switch (itemtype) {
                 case ITEMTYPE_COINS:
-                        t = asset_get(P("./sprites/sprite-13-13.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-13-13.png");
                 case ITEMTYPE_CHEST:
-                        t = asset_get(P("./sprites/sprite-13-6.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-13-6.png");
                 case ITEMTYPE_URN:
-                        t = asset_get(P("./sprites/sprite-13-8.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-13-8.png");
                 case ITEMTYPE_URN_BROKEN:
-                        t = asset_get(P("./sprites/sprite-13-9.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-13-9.png");
                 case ITEMTYPE_SWORD:
                 case ITEMTYPE_LONGSWORD:
                 case ITEMTYPE_GREATSWORD:
-                        t = asset_get(P("./sprites/sprite-17-1.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-17-1.png");
                 case ITEMTYPE_SPEAR:
-                        t = asset_get(P("./sprites/sprite-17-4.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-17-4.png");
                 default:
-                        t = asset_get(P("./sprites/sprite-0-13.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-0-13.png");
         }
-        return t;
 }
 
-void item_render_one(item *item, vec2 camera_position)
+void item_render(item *item)
 {
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(camera_position.x - graphics_viewport_width() / 2,
-                camera_position.x + graphics_viewport_width() / 2,
-                -camera_position.y + graphics_viewport_height() / 2,
-                -camera_position.y - graphics_viewport_height() / 2, -1, 1);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_TEXTURE_2D);
-
-        texture *item_tex = item_get_texture(item->itemtype);
-        glBindTexture(GL_TEXTURE_2D, texture_handle(item_tex));
-
-        glBegin(GL_TRIANGLES);
-        glTexCoord2f(0, 1);
-        glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
-        glTexCoord2f(0, 0);
-        glVertex3f(item->position.x, item->position.y, 0);
-        glTexCoord2f(1, 0);
-        glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
-
-        glTexCoord2f(0, 1);
-        glVertex3f(item->position.x, item->position.y + TILE_SIZE, 0);
-        glTexCoord2f(1, 1);
-        glVertex3f(item->position.x + TILE_SIZE, item->position.y + TILE_SIZE,
-                   0);
-        glTexCoord2f(1, 0);
-        glVertex3f(item->position.x + TILE_SIZE, item->position.y, 0);
-        glEnd();
-
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
+        int type = item->itemtype;
+        if (!item_counts[type]) {
+                item_texture_map[type] = get_item_texture(type);
+        }
+        item_counts[type]++;
+        // TODO: Render items in different colors
+        DrawTextureV(item_texture_map[type], item->position, BLACK);
 }
 
 item_stack **item_map_init()
 {
-        item_stack **item_map = calloc(sizeof(item_stack *), MAX_WIDTH * MAX_HEIGHT);
-        int i;
+        item_stack **item_map =
+            calloc(sizeof(item_stack *), MAX_WIDTH * MAX_HEIGHT);
 
-        for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)
+        for (int i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)
                 item_map[i] = item_stack_new();
         return item_map;
 }
 
 void item_map_destroy(item_stack **item_map)
 {
-        int i;
-        for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)
+        for (int i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i)
                 item_stack_destroy(item_map[i]);
         free(item_map);
-        item_map = NULL;
+        // Unload any item textures we used
+        for (int i = 0; i < NUM_ITEM_TYPES; ++i) {
+                if (item_counts[i]) {
+                        UnloadTexture(item_texture_map[i]);
+                }
+        }
+        memset(item_counts, 0, sizeof(item_counts));
 }
 
 /* Update item logic */
@@ -210,7 +178,7 @@ void item_map_update(item_stack **item_map)
         /* Perform any item map updates here, such as pots being broken, etc */
 }
 
-item_stack *item_map_stack_at(item_stack **item_map, vec2 position)
+item_stack *item_map_stack_at(item_stack **item_map, Vector2 position)
 {
         int x = floor(position.x / TILE_SIZE);
         int y = floor(position.y / TILE_SIZE);
@@ -223,22 +191,24 @@ item_stack *item_map_stack_at(item_stack **item_map, vec2 position)
         return item_map[x + y * MAX_WIDTH];
 }
 
-void item_map_add_item(item_stack **item_map, int itemtype, vec2 position)
+void item_map_add_item(item_stack **item_map, int itemtype, Vector2 position)
 {
+
         item *item = item_new(itemtype, position);
         item_stack *s = item_map_stack_at(item_map, position);
         item_stack_push(s, item);
-        debug("Adding item");
+        TraceLog(LOG_INFO, "[%s] Added item %d at position (%.1f, %.1f)",
+                 __FILE__, item->itemtype, position.x, position.y);
 }
 
 /* Render everything in the item map */
-void item_map_render(item_stack **item_map, vec2 camera_position)
+void item_map_render(item_stack **item_map)
 {
         int i;
         for (i = 0; i < MAX_WIDTH * MAX_HEIGHT; ++i) {
                 /* Only render whatever is on the top each item stack */
                 item *top = item_map[i]->item;
                 if (top)
-                        item_render_one(top, camera_position);
+                        item_render(top);
         }
 }

@@ -1,93 +1,53 @@
 #include "character.h"
+#include "helpers.h"
 #include "level.h"
+#include "raymath.h"
+#include <stdlib.h>
+
+void flip_character_sprite(character *c)
+{
+        Image flipped = GetTextureData(c->texture);
+        ImageFlipHorizontal(&flipped);
+        UnloadTexture(c->texture);
+        LoadTextureFromImage(flipped);
+        UnloadImage(flipped);
+        c->facing_left = !c->facing_left;
+}
 
 character *character_new()
 {
         character *c = malloc(sizeof(character));
-        c->position = vec2_zero();
+        c->position = Vector2Zero();
+        c->new_position = Vector2Zero();
         c->facing_left = 0;
-        c->health = 100;
-        c->name = "Charles";
+        c->health = 99;
+        c->name = "Steve";
+        // Sprite fields
+        c->spritesheet = LoadImage("sprites/sprite-0-2.png");
+        c->sprite_index = Vector2Zero();
+        Image tmp = get_sprite_from_sheet(c->spritesheet, c->sprite_index);
+        c->texture = LoadTextureFromImage(tmp);
+        UnloadImage(tmp);
         return c;
 }
 
 void character_destroy(character *c)
 {
+        UnloadImage(c->spritesheet);
+        UnloadTexture(c->texture);
         free(c);
 }
 
+// Update any character attributes
 void character_update(character *c)
 {
-        // Update any character attributes
-}
-
-/* Renders a simple quad to the screen */
-void character_render(character *c, vec2 camera_position)
-{
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(camera_position.x - graphics_viewport_width() / 2,
-                camera_position.x + graphics_viewport_width() / 2,
-                -camera_position.y + graphics_viewport_height() / 2,
-                -camera_position.y - graphics_viewport_height() / 2, -1, 1);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_TEXTURE_2D);
-
-        texture *character_tex = asset_get(P("./sprites/sprite-0-2.dds"));
-        glBindTexture(GL_TEXTURE_2D, texture_handle(character_tex));
-
-        /* Swaps the direction of the uvs when facing the opposite direction */
-        if (c->facing_left) {
-                glBegin(GL_TRIANGLES);
-                glTexCoord2f(1, 1);
-                glVertex3f(c->position.x, c->position.y + TILE_SIZE, 0);
-                glTexCoord2f(1, 0);
-                glVertex3f(c->position.x, c->position.y, 0);
-                glTexCoord2f(0, 0);
-                glVertex3f(c->position.x + TILE_SIZE, c->position.y, 0);
-
-                glTexCoord2f(1, 1);
-                glVertex3f(c->position.x, c->position.y + TILE_SIZE, 0);
-                glTexCoord2f(0, 1);
-                glVertex3f(c->position.x + TILE_SIZE, c->position.y + TILE_SIZE, 0);
-                glTexCoord2f(0, 0);
-                glVertex3f(c->position.x + TILE_SIZE, c->position.y, 0);
-                glEnd();
-
-        } else {
-
-                glBegin(GL_TRIANGLES);
-                glTexCoord2f(0, 1);
-                glVertex3f(c->position.x, c->position.y + TILE_SIZE, 0);
-                glTexCoord2f(0, 0);
-                glVertex3f(c->position.x, c->position.y, 0);
-                glTexCoord2f(1, 0);
-                glVertex3f(c->position.x + TILE_SIZE, c->position.y, 0);
-
-                glTexCoord2f(0, 1);
-                glVertex3f(c->position.x, c->position.y + TILE_SIZE, 0);
-                glTexCoord2f(1, 1);
-                glVertex3f(c->position.x + TILE_SIZE, c->position.y + TILE_SIZE, 0);
-                glTexCoord2f(1, 0);
-                glVertex3f(c->position.x + TILE_SIZE, c->position.y, 0);
-                glEnd();
+        // Flip character image if necessary
+        if (c->new_position.x < c->position.x && c->facing_left == 0) {
+                flip_character_sprite(c);
         }
-
-        glDisable(GL_TEXTURE_2D);
-
-        glDisable(GL_BLEND);
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
+        if (c->new_position.x > c->position.x && c->facing_left == 1) {
+                flip_character_sprite(c);
+        }
+        // Move the character
+        c->position = c->new_position;
 }

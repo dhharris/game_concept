@@ -1,79 +1,75 @@
+#include <assert.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+#include "raymath.h"
+#include "utils.h"
 
 #include "level.h"
 
-/* These vast case statements are basically a nasty way of assigning properties
- * to the tile types */
+static int CURRENT_LEVEL_ID; // Level that the player is on
+static int GOING_DOWN = 1;   // Whether the player is going down
+static int tile_counts[NUM_TILE_TYPES];
 
-static texture *tile_get_texture(int tiletype)
+Texture2D tile_get_texture(int tiletype)
 {
-        texture *t;
         switch (tiletype) {
                 case TILETYPE_AIR:
-                        t = asset_get(P("./sprites/sprite-0-13.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-0-13.png");
                 case TILETYPE_DIRT:
                 case TILETYPE_DIRT_OVERHANG:
                 case TILETYPE_SURFACE:
-                        t = asset_get(P("./sprites/sprite-8-3.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-3.png");
                 case TILETYPE_DIRT_ROCK:
-                        t = asset_get(P("./sprites/sprite-8-4.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-4.png");
                 case TILETYPE_GRASS:
-                        t = asset_get(P("./sprites/sprite-11-4.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-11-4.png");
                 case TILETYPE_GRASS_ROCK1:
                 case TILETYPE_GRASS_ROCK2:
-                        t = asset_get(P("./sprites/sprite-11-5.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-11-5.png");
                 case TILETYPE_TREE:
-                        t = asset_get(P("./sprites/sprite-12-3.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-12-3.png");
                 case TILETYPE_BRICK:
-                        t = asset_get(P("./sprites/sprite-8-0.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-0.png");
                 case TILETYPE_DOOR:
-                        t = asset_get(P("./sprites/sprite-8-12.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-12.png");
                 case TILETYPE_DOOR_OPEN:
-                        t = asset_get(P("./sprites/sprite-8-13.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-13.png");
                 case TILETYPE_STAIRS_DOWN:
-                        t = asset_get(P("./sprites/sprite-8-10.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-10.png");
                 case TILETYPE_STAIRS_UP:
-                        t = asset_get(P("./sprites/sprite-8-11.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-8-11.png");
                 case TILETYPE_COBWEB:
-                        t = asset_get(P("./sprites/sprite-11-1.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-11-1.png");
                 default:
-                        t = asset_get(P("./sprites/sprite-0-13.dds"));
-                        break;
+                        return LoadTexture("./sprites/sprite-0-13.png");
         }
-        return t;
 }
 
-float tile_get_transparency(int tiletype)
+Color tile_get_color(int tiletype)
 {
+        float transparency_factor;
+        // All tiles are just a little darker than the background color,
+        // so we use transparency tricks
         switch (tiletype) {
                 case TILETYPE_DOOR:
                 case TILETYPE_DOOR_OPEN:
                 case TILETYPE_STAIRS_UP:
                 case TILETYPE_STAIRS_DOWN:
-                        return 0.25;
+                        transparency_factor = 0.25;
                 case TILETYPE_BRICK:
-                        return 0.75;
+                        transparency_factor = 0.75;
                 default:
-                        return 0.5;
+                        transparency_factor = 0.5;
         }
+        return (Color){0, 0, 0, transparency_factor * 255};
 }
 
 int tile_has_collision(int tiletype)
 {
-
+        /* Blacklist of tiles that have collision enabled */
         switch (tiletype) {
                 case TILETYPE_DIRT:
                         return 1;
@@ -94,17 +90,15 @@ int tile_has_collision(int tiletype)
         return 0;
 }
 
-/* Levels are basically stored in an ascii file, with these being the tile type
- * characters. */
-
+/**
+ * Levels are stored in an ascii file. This method defines what those
+ * characters map to.
+ */
 static int char_to_tile(char c)
 {
-
         switch (c) {
                 case '\r':
-                        return TILETYPE_NONE;
                 case '\n':
-                        return TILETYPE_NONE;
                 case ' ':
                         return TILETYPE_NONE;
                 case '`':
@@ -127,321 +121,138 @@ static int char_to_tile(char c)
                         return TILETYPE_GRASS;
                 case '^':
                         return TILETYPE_TREE;
-        }
-
-        warning("Unknown tile type character: '%c'", c);
-        return TILETYPE_NONE;
-}
-
-static int tile_counts[NUM_TILE_TYPES];
-
-/* This just runs through the file and fills some vertex buffers with tile
- * properties */
-static int SDL_RWreadline(SDL_RWops *file, char *buffer, int buffersize)
-{
-
-        char c;
-        int status = 0;
-        int i = 0;
-        while (1) {
-
-                status = SDL_RWread(file, &c, 1, 1);
-
-                if (status == -1)
-                        return -1;
-                if (i == buffersize - 1)
-                        return -1;
-                if (status == 0)
-                        break;
-
-                buffer[i] = c;
-                i++;
-
-                if (c == '\n') {
-                        buffer[i] = '\0';
-                        return i;
-                }
-        }
-
-        if (i > 0) {
-                buffer[i] = '\0';
-                return i;
-        } else {
-                return 0;
+                default:
+                        return TILETYPE_NONE;
         }
 }
 
 /* Load the num level into buf */
-void level_get_path(char *buf, int num)
+void level_get_path(char *buf, int id)
 {
-        snprintf(buf, LEVEL_NAME_LIMIT, "./levels/%d.level", num);
+        snprintf(buf, LEVEL_NAME_LIMIT, "./levels/%d.level", id);
 }
 
 level *level_load_file(const char *filename)
 {
-        int i;
+        FILE *file = fopen(filename, "r");
 
-        for (i = 0; i < NUM_TILE_TYPES; i++) {
-                tile_counts[i] = 0;
+        if (!file) {
+                TraceLog(LOG_ERROR, "[%s] Failed to open file: %s", __FILE__,
+                         filename);
+                return NULL;
         }
 
+        TraceLog(LOG_INFO, "[%s] Loading level: %s", __FILE__, filename);
+
+        // Reset tile counts
+        memset(tile_counts, 0, sizeof(tile_counts));
+
         level *l = malloc(sizeof(level));
-        l->tile_sets = malloc(sizeof(tile_set) * NUM_TILE_TYPES);
-        l->tile_map = calloc(sizeof(int), MAX_WIDTH * MAX_HEIGHT);
+        l->tile_map = malloc(sizeof(int) * MAX_WIDTH * MAX_HEIGHT);
         l->item_map = item_map_init();
-        l->character_position = vec2_zero();
-
-        /* Load level name, placing null byte when encountering the . */
-        const char *start = filename + strlen(filename);
-        while (*start-- != '/')
-                ; // Find the part past the last /
-        strncpy(l->name, start + 2, LEVEL_NAME_LIMIT);
-        l->name[LEVEL_NAME_LIMIT - 1] = '\0';
-        for (i = 0; i < LEVEL_NAME_LIMIT; ++i)
-                if (l->name[i] == '.') {
-                        l->name[i] = '\0';
-                        break;
-                }
-
-        SDL_RWops *file = SDL_RWFromFile(filename, "r");
-        char line[MAX_WIDTH];
 
         int y = 0;
         int x = 0;
-        while (SDL_RWreadline(file, line, 1024)) {
-
-                for (x = 0; x < strlen(line); x++) {
+        char *line = 0;
+        size_t linecap = 0;
+        ssize_t linelen;
+        Vector2 stair_up_position = Vector2Zero();
+        Vector2 stair_down_position = Vector2Zero();
+        while ((linelen = getline(&line, &linecap, file)) > 0) {
+                for (x = 0; x < linelen; x++) {
                         char c = line[x];
                         int type = char_to_tile(c);
 
-                        /* Character starts at the up stairwell */
-                        if (type == TILETYPE_STAIRS_UP)
-                                l->character_position =
-                                    vec2_mul(vec2_new(x, y), TILE_SIZE);
+                        if (type == TILETYPE_STAIRS_UP) {
+                                stair_up_position =
+                                    Vector2Scale((Vector2){x, y}, TILE_SIZE);
+                        } else if (type == TILETYPE_STAIRS_DOWN) {
+                                stair_down_position =
+                                    Vector2Scale((Vector2){x, y}, TILE_SIZE);
+                        }
 
                         l->tile_map[x + y * MAX_WIDTH] = type;
                         tile_counts[type]++;
                 }
-
-                y++;
+                ++y;
         }
+        // Determine which stairwell we arrive at upon loading level
+        l->starting_position =
+            GOING_DOWN ? stair_up_position : stair_down_position;
 
-        SDL_RWclose(file);
+        free(line);
+        fclose(file);
 
-        /* Set character position to 1,1 if no stairs were found in the
-         * level */
-        if (vec2_equ(l->character_position, vec2_zero()))
-                l->character_position = vec2_mul(vec2_new(1, 1), TILE_SIZE);
-
-        /* Start from 1, type 0 is none! */
+        // Populate tile textures used in this level
         for (int i = 1; i < NUM_TILE_TYPES; i++) {
-
-                int num_tiles = tile_counts[i];
-
-                float *position_data =
-                    malloc(sizeof(float) * 3 * 4 * num_tiles);
-                float *uv_data = malloc(sizeof(float) * 2 * 4 * num_tiles);
-
-                int pos_i = 0;
-                int uv_i = 0;
-
-                for (x = 0; x < MAX_WIDTH; x++)
-                        for (y = 0; y < MAX_HEIGHT; y++) {
-                                int type = l->tile_map[x + y * MAX_WIDTH];
-                                if (type == i) {
-                                        position_data[pos_i] = x * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] = y * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] = 0;
-                                        pos_i++;
-
-                                        position_data[pos_i] =
-                                            (x + 1) * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] = y * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] = 0;
-                                        pos_i++;
-
-                                        position_data[pos_i] =
-                                            (x + 1) * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] =
-                                            (y + 1) * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] = 0;
-                                        pos_i++;
-
-                                        position_data[pos_i] = x * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] =
-                                            (y + 1) * TILE_SIZE;
-                                        pos_i++;
-                                        position_data[pos_i] = 0;
-                                        pos_i++;
-
-                                        uv_data[uv_i] = 0;
-                                        uv_i++;
-                                        uv_data[uv_i] = 0;
-                                        uv_i++;
-
-                                        uv_data[uv_i] = 1;
-                                        uv_i++;
-                                        uv_data[uv_i] = 0;
-                                        uv_i++;
-
-                                        uv_data[uv_i] = 1;
-                                        uv_i++;
-                                        uv_data[uv_i] = 1;
-                                        uv_i++;
-
-                                        uv_data[uv_i] = 0;
-                                        uv_i++;
-                                        uv_data[uv_i] = 1;
-                                        uv_i++;
-                                }
-                        }
-
-                l->tile_sets[i].num_tiles = num_tiles;
-
-                glGenBuffers(1, &l->tile_sets[i].positions_buffer);
-                glGenBuffers(1, &l->tile_sets[i].texcoords_buffer);
-
-                glBindBuffer(GL_ARRAY_BUFFER, l->tile_sets[i].positions_buffer);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 4 * num_tiles,
-                             position_data, GL_STATIC_DRAW);
-
-                glBindBuffer(GL_ARRAY_BUFFER, l->tile_sets[i].texcoords_buffer);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * 4 * num_tiles,
-                             uv_data, GL_STATIC_DRAW);
-
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-                free(position_data);
-                free(uv_data);
+                if (tile_counts[i])
+                        l->texture_map[i] = tile_get_texture(i);
         }
 
-        // Set level color
-        l->color = vec3_new(0.28, 0.48, 0.25);
+        // Load level name, placing null byte when encountering the .
+        const char *start = filename + strlen(filename);
+        while (*start-- != '/')
+                ; // NULL
+        strncpy(l->name, start + 2, LEVEL_NAME_LIMIT);
+        l->name[LEVEL_NAME_LIMIT - 1] = '\0';
+        for (int i = 0; i < LEVEL_NAME_LIMIT; ++i) {
+                if (l->name[i] == '.') {
+                        l->name[i] = '\0';
+                        break;
+                }
+        }
+
+        // Greenish color
+        l->color = (Color){71, 122, 64, 255};
 
         return l;
 }
 
+level *level_load()
+{
+        char path[LEVEL_NAME_LIMIT];
+        level_get_path(path, CURRENT_LEVEL_ID);
+        return level_load_file(path);
+}
+
 void level_destroy(level *l)
 {
-
-        /* Start from 1 as 0 is none tile set */
-        for (int i = 1; i < NUM_TILE_TYPES; i++) {
-                glDeleteBuffers(1, &l->tile_sets[i].positions_buffer);
-                glDeleteBuffers(1, &l->tile_sets[i].texcoords_buffer);
+        if (l == 0) {
+                return;
         }
-
         free(l->tile_map);
-        free(l->tile_sets);
         item_map_destroy(l->item_map);
+        for (int i = 0; i < NUM_TILE_TYPES; i++) {
+                if (tile_counts[i])
+                        UnloadTexture(l->texture_map[i]);
+        }
         free(l);
 }
 
-/* Render background of level based on its color */
+/* Render rectangle of level based on its color and size */
 void level_render_background(level *l)
 {
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(0, graphics_viewport_width(), 0, graphics_viewport_height(), -1,
-                1);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-
-        glColor3f(l->color.x, l->color.y, l->color.z);
-        glBegin(GL_QUADS);
-
-        glVertex3f(0, graphics_viewport_height(), 0.0);
-        glTexCoord2f(1, 0);
-        glVertex3f(graphics_viewport_width(), graphics_viewport_height(), 0.0);
-        glTexCoord2f(1, 1);
-        glVertex3f(graphics_viewport_width(), 0, 0.0);
-        glTexCoord2f(0, 1);
-        glVertex3f(0, 0, 0.0);
-        glTexCoord2f(0, 0);
-
-        glEnd();
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
+        DrawRectangle(0, 0, LEVEL_SIZE * TILE_SIZE, LEVEL_SIZE * TILE_SIZE,
+                      l->color);
 }
 
-/* Renders each tileset in one go. Uses vertex buffers. */
-
-void level_render_tiles(level *l, vec2 camera_position)
+void level_render_tiles(level *l)
 {
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(camera_position.x - graphics_viewport_width() / 2,
-                camera_position.x + graphics_viewport_width() / 2,
-                -camera_position.y + graphics_viewport_height() / 2,
-                -camera_position.y - graphics_viewport_height() / 2, -1, 1);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-
-        glEnable(GL_TEXTURE_2D);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        /* Start from 1, 0 is no tiles! */
-
-        for (int i = 1; i < NUM_TILE_TYPES; i++) {
-                // Tile transparency
-                glColor4f(1.0, 1.0, 1.0, tile_get_transparency(i));
-
-                texture *tile_tex = tile_get_texture(i);
-                glBindTexture(GL_TEXTURE_2D, texture_handle(tile_tex));
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                                GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                                GL_CLAMP_TO_EDGE);
-
-                glEnableClientState(GL_VERTEX_ARRAY);
-                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-                glBindBuffer(GL_ARRAY_BUFFER, l->tile_sets[i].positions_buffer);
-                glVertexPointer(3, GL_FLOAT, 0, (void *)0);
-
-                glBindBuffer(GL_ARRAY_BUFFER, l->tile_sets[i].texcoords_buffer);
-                glTexCoordPointer(2, GL_FLOAT, 0, (void *)0);
-
-                glDrawArrays(GL_QUADS, 0, l->tile_sets[i].num_tiles * 4);
-
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-                glDisableClientState(GL_VERTEX_ARRAY);
+        for (int x = 0; x < LEVEL_SIZE; ++x) {
+                for (int y = 0; y < LEVEL_SIZE; ++y) {
+                        int type = l->tile_map[x + y * MAX_WIDTH];
+                        if (type != TILETYPE_NONE) {
+                                DrawTextureV(
+                                    l->texture_map[type],
+                                    Vector2Scale((Vector2){x, y}, TILE_SIZE),
+                                    tile_get_color(type));
+                        }
+                }
         }
-
-        glDisable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
 }
 
-int level_tile_at(level *l, vec2 position)
+int level_tile_at(level *l, Vector2 position)
 {
-
         int x = floor(position.x / TILE_SIZE);
         int y = floor(position.y / TILE_SIZE);
 
@@ -453,8 +264,26 @@ int level_tile_at(level *l, vec2 position)
         return l->tile_map[x + y * MAX_WIDTH];
 }
 
-vec2 level_tile_position(level *l, int x, int y)
+int change_level(int delta)
 {
+        int new_level = CURRENT_LEVEL_ID + delta;
+        if (new_level >= 0 && new_level < NUM_LEVELS) {
+                GOING_DOWN = (delta > 0) ? 1 : 0;
+                CURRENT_LEVEL_ID = new_level;
+                return 1;
+        }
+        return 0;
+}
 
-        return vec2_new(x * TILE_SIZE, y * TILE_SIZE);
+/* Tell the main loop when to reset the level */
+int level_should_reset(level *l, Vector2 character_position)
+{
+        switch (level_tile_at(l, character_position)) {
+                case TILETYPE_STAIRS_UP:
+                        return change_level(-1);
+                case TILETYPE_STAIRS_DOWN:
+                        return change_level(1);
+                default:
+                        return 0;
+        }
 }

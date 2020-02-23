@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "gen.h"
 #include "level.h"
+#include "helpers.h"
 
 static int level_counter;
 
@@ -19,17 +21,17 @@ void gen_level()
 
         /* Place stairs in random location(s) */
 
-        vec2 stair_up = vec2_new(arc4random() % (LEVEL_SIZE - 2) + 1,
-                                 arc4random()  % (LEVEL_SIZE - 2) + 1);
-        vec2 stair_down = vec2_new(arc4random() % (LEVEL_SIZE - 2) + 1,
-                                 arc4random()  % (LEVEL_SIZE - 2) + 1);
+        Vector2 stair_up = {arc4random() % (LEVEL_SIZE - 2) + 1,
+                            arc4random() % (LEVEL_SIZE - 2) + 1};
+        Vector2 stair_down = {arc4random() % (LEVEL_SIZE - 2) + 1,
+                              arc4random() % (LEVEL_SIZE - 2) + 1};
 
         for (y = 0; y < LEVEL_SIZE; ++y) {
                 for (x = 0; x < LEVEL_SIZE; ++x) {
-                        vec2 curr = vec2_new(x, y);
-                        if (vec2_equ(stair_up, curr))
+                        Vector2 curr = (Vector2){x, y};
+                        if (Vector2Eq(stair_up, curr))
                                 fprintf(f, "<");
-                        else if (vec2_equ(stair_down, curr))
+                        else if (Vector2Eq(stair_down, curr))
                                 fprintf(f, ">");
                         else if (x < LEVEL_SIZE - 1 && y < LEVEL_SIZE - 1 &&
                                  x > 0 && y > 0)

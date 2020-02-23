@@ -4,10 +4,20 @@ A *work in progress* roguelike game written entirely in C.
 
 ## Using the software
 ### Prerequisites
-You will need to install the Corange library–clone [my fork](https://github.com/dhharris/Corange) and follow the instructions.
+Install `raylib` and its dependencies
+```
+brew install glfw
+git clone https://github.com/raysan5/raylib.git
+cd raylib/src
+make
+```
 
 ### Building
-    make
+```
+make
+```
 
 ### Running
-    ./demo
+```
+./demo
+```
