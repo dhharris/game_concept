@@ -275,6 +275,12 @@ int change_level(int delta)
         return 0;
 }
 
+int level_validate_position(level *l, Vector2 character_position)
+{
+        int tile = level_tile_at(l, character_position);
+        return !tile_has_collision(tile);
+}
+
 /* Tell the main loop when to reset the level */
 int level_should_reset(level *l, Vector2 character_position)
 {

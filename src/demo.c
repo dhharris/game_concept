@@ -62,13 +62,13 @@ int demo_update()
                 // player->new_position = GetMousePosition();
         }
         // Keyboard movement
-        if (IsKeyPressed(KEY_UP)) {
+        if (IsKeyDown(KEY_UP)) {
                 player->new_position.y -= TILE_SIZE;
-        } else if (IsKeyPressed(KEY_DOWN)) {
+        } else if (IsKeyDown(KEY_DOWN)) {
                 player->new_position.y += TILE_SIZE;
-        } else if (IsKeyPressed(KEY_LEFT)) {
+        } else if (IsKeyDown(KEY_LEFT)) {
                 player->new_position.x -= TILE_SIZE;
-        } else if (IsKeyPressed(KEY_RIGHT)) {
+        } else if (IsKeyDown(KEY_RIGHT)) {
                 player->new_position.x += TILE_SIZE;
         } else if (IsKeyPressed(KEY_R)) {
                 player->new_position = current_level->starting_position;
@@ -84,7 +84,13 @@ int demo_update()
                                   player->position);
         }
 
+        // Move player to previous position if they are trying to access an
+        // invalid position
+        if (!level_validate_position(current_level, player->new_position)) {
+                player->new_position = player->position;
+        }
         character_update(player);
+
 
         // Update items logic
         item_map_update(current_level->item_map);
