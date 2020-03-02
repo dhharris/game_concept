@@ -4,6 +4,10 @@
 #include "raymath.h"
 #include <stdlib.h>
 
+// These variables control player speed
+#define ONE_IN 6
+static int FRAME_COUNTER = 0;
+
 void flip_character_sprite(character *c)
 {
         Image flipped = GetTextureData(c->texture);
@@ -48,6 +52,14 @@ void character_update(character *c)
         if (c->new_position.x > c->position.x && c->facing_left == 1) {
                 flip_character_sprite(c);
         }
-        // Move the character
-        c->position = c->new_position;
+        ;
+        if (FRAME_COUNTER % ONE_IN == 0) {
+                // Move the character
+                c->position = c->new_position;
+                FRAME_COUNTER = 0;
+        } else {
+                // Reset the new position
+                c->new_position = c->position;
+        }
+        FRAME_COUNTER++;
 }
