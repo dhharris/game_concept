@@ -55,6 +55,7 @@ void character_update(character *c)
         ;
         if (FRAME_COUNTER % ONE_IN == 0) {
                 // Move the character
+                // TODO: For mouse movement, make player one tile closer
                 c->position = c->new_position;
                 FRAME_COUNTER = 0;
         } else {
