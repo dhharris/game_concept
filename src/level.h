@@ -29,6 +29,7 @@ void level_render_tiles(level *l);
 int tile_has_collision(int tiletype);
 int level_should_reset(level *l, Vector2 character_position);
 int level_validate_position(level *l, Vector2 position);
+Vector2 level_get_position(level *l, Vector2 position);
 int level_tile_at(level *l, Vector2 position);
 
 void level_get_path(char *buf, int id);

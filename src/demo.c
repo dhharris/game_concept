@@ -18,7 +18,6 @@ static character *player;
 static level *current_level;
 static float level_time;
 static Camera2D camera;
-static Vector2 camera_position;
 
 static void reset_level()
 {
@@ -59,7 +58,16 @@ int demo_update()
         // Update player location
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
                 // TODO: Fix mouse movement
-                // player->new_position = GetMousePosition();
+                Vector2 mouse_pos = GetMousePosition();
+                // Vector2 coordinates = level_get_position(current_level,
+                // mouse_pos);
+                // player->new_position = Vector2Scale(coordinates, TILE_SIZE);
+                TraceLog(LOG_INFO, "Mouse position: (%f, %f)", mouse_pos.x,
+                         mouse_pos.y);
+                TraceLog(LOG_INFO, "Camera target: (%f, %f)", camera.target.x,
+                         camera.target.y);
+                TraceLog(LOG_INFO, "Camera offset: (%f, %f)", camera.offset.x,
+                         camera.offset.y);
         }
         // Keyboard movement
         if (IsKeyDown(KEY_UP)) {

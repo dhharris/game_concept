@@ -56,6 +56,9 @@ void character_update(character *c)
         if (FRAME_COUNTER % ONE_IN == 0) {
                 // Move the character
                 // TODO: For mouse movement, make player one tile closer
+                if (!Vector2Eq(c->position, c->new_position)) {
+                        TraceLog(LOG_INFO, "[%s] Character moving to (%f, %f)", __FILE__, c->new_position.x, c->new_position.y);
+                }
                 c->position = c->new_position;
                 FRAME_COUNTER = 0;
         } else {

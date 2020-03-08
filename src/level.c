@@ -251,7 +251,7 @@ void level_render_tiles(level *l)
         }
 }
 
-int level_tile_at(level *l, Vector2 position)
+Vector2 level_get_position(level *l, Vector2 position)
 {
         int x = floor(position.x / TILE_SIZE);
         int y = floor(position.y / TILE_SIZE);
@@ -261,7 +261,13 @@ int level_tile_at(level *l, Vector2 position)
         assert(x < MAX_WIDTH);
         assert(y < MAX_HEIGHT);
 
-        return l->tile_map[x + y * MAX_WIDTH];
+        return (Vector2) {x, y};
+}
+
+int level_tile_at(level *l, Vector2 position)
+{
+        Vector2 pos = level_get_position(l, position);
+        return l->tile_map[(int) pos.x + (int) pos.y * MAX_WIDTH];
 }
 
 int change_level(int delta)
