@@ -148,7 +148,8 @@ level *level_load_file(const char *filename)
         memset(tile_counts, 0, sizeof(tile_counts));
 
         level *l = malloc(sizeof(level));
-        l->tile_map = malloc(sizeof(int) * MAX_WIDTH * MAX_HEIGHT);
+        // Make sure all tiles are initialized
+        l->tile_map = calloc(MAX_WIDTH * MAX_HEIGHT, sizeof(int));
         l->item_map = item_map_init();
 
         int y = 0;
@@ -253,11 +254,9 @@ void level_render_tiles(level *l)
 
 Vector2 level_get_position(level *l, Vector2 position)
 {
-        int x = floor(position.x / TILE_SIZE);
-        int y = floor(position.y / TILE_SIZE);
+        size_t x = fabs(floorf(position.x / TILE_SIZE));
+        size_t y = fabs(floorf(position.y / TILE_SIZE));
 
-        assert(x >= 0);
-        assert(y >= 0);
         assert(x < MAX_WIDTH);
         assert(y < MAX_HEIGHT);
 

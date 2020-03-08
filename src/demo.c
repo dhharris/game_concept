@@ -57,17 +57,18 @@ int demo_update()
 {
         // Update player location
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-                // TODO: Fix mouse movement
-                Vector2 mouse_pos = GetMousePosition();
-                // Vector2 coordinates = level_get_position(current_level,
-                // mouse_pos);
-                // player->new_position = Vector2Scale(coordinates, TILE_SIZE);
-                TraceLog(LOG_INFO, "Mouse position: (%f, %f)", mouse_pos.x,
-                         mouse_pos.y);
-                TraceLog(LOG_INFO, "Camera target: (%f, %f)", camera.target.x,
-                         camera.target.y);
-                TraceLog(LOG_INFO, "Camera offset: (%f, %f)", camera.offset.x,
-                         camera.offset.y);
+                // Transform mouse position so it is relative to the map
+                Vector2 mouse_pos = Vector2Add(
+                        GetMousePosition(),
+                        Vector2Subtract(camera.target, camera.offset));
+                // Snap to grid
+                Vector2 coordinates = level_get_position(current_level, mouse_pos);
+                Vector2 new_position = Vector2Scale(coordinates, TILE_SIZE);
+
+                // Validate
+                if (level_validate_position(current_level, new_position)) {
+                        player->new_position = new_position;
+                }
         }
         // Keyboard movement
         if (IsKeyDown(KEY_UP)) {
@@ -105,6 +106,7 @@ int demo_update()
 
         // Camera follows player
         camera.target = player->position;
+        //SetMouseOffset(player->position.x, player->position.y);
 
         level_time += (float)1 / FPS;
 
@@ -152,6 +154,11 @@ void demo_render()
         char time_label[10];
         snprintf(time_label, 10, "Time %2.2f", level_time);
         DrawText(time_label, WINDOW_WIDTH / 2 - 20, 10, 20, DARKGRAY);
+
+        char player_pos_label[25];
+        Vector2 level_pos = level_get_position(current_level, player->position);
+        snprintf(player_pos_label, 25, "Player X: %2.2f Y: %2.2f", level_pos.x, level_pos.y);
+        DrawText(player_pos_label, 100, 132, 16, BLACK);
 
         DrawFPS(WINDOW_WIDTH - 85, 10);
 
