@@ -298,3 +298,10 @@ int level_should_reset(level *l, Vector2 character_position)
                         return 0;
         }
 }
+
+/* Computes shortest path using BFS */
+path *level_shortest_path(level *l, Vector2 start, Vector2 end)
+{
+        // TODO
+        return path_new();
+}

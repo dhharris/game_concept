@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "item.h"
+#include "path.h"
 #include "tiletypes.h"
 
 #define LEVEL_NAME_LIMIT 32
@@ -34,3 +35,4 @@ int level_tile_at(level *l, Vector2 position);
 
 void level_get_path(char *buf, int id);
 level *level_load_file(const char *filename);
+path *level_shortest_path(level *l, Vector2 start, Vector2 end);
