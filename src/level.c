@@ -8,6 +8,7 @@
 #include "utils.h"
 
 #include "level.h"
+#include "helpers.h"
 
 static int CURRENT_LEVEL_ID; // Level that the player is on
 static int GOING_DOWN = 1;   // Whether the player is going down
@@ -254,19 +255,26 @@ void level_render_tiles(level *l)
 
 Vector2 level_get_position(level *l, Vector2 position)
 {
-        size_t x = fabs(floorf(position.x / TILE_SIZE));
-        size_t y = fabs(floorf(position.y / TILE_SIZE));
+        int x = fabs(floorf(position.x / TILE_SIZE));
+        int y = fabs(floorf(position.y / TILE_SIZE));
 
-        assert(x < MAX_WIDTH);
-        assert(y < MAX_HEIGHT);
+        assert(x >= 0 && x < MAX_WIDTH);
+        assert(y >= 0 && y < MAX_HEIGHT);
 
         return (Vector2) {x, y};
 }
 
+/* Returns a tile given level x, y coordinates */
+int level_get_tile(level *l, int x, int y)
+{
+        return l->tile_map[y * MAX_WIDTH + x];
+}
+
+/* Returns the tile at a given screen position */
 int level_tile_at(level *l, Vector2 position)
 {
         Vector2 pos = level_get_position(l, position);
-        return l->tile_map[(int) pos.x + (int) pos.y * MAX_WIDTH];
+        return level_get_tile(l, pos.x, pos.y);
 }
 
 int change_level(int delta)
@@ -299,9 +307,74 @@ int level_should_reset(level *l, Vector2 character_position)
         }
 }
 
+int within_level_bounds(int x, int y)
+{
+        return ((x >= 0 && x < MAX_WIDTH) && (y >= 0 && y < MAX_HEIGHT));
+}
+
 /* Computes shortest path using BFS */
 path *level_shortest_path(level *l, Vector2 start, Vector2 end)
 {
-        // TODO
-        return path_new();
+        // Early exit if end is invalid
+        if (!level_validate_position(l, end)) {
+                return path_new();
+        }
+        int visited[MAX_WIDTH][MAX_HEIGHT] = {0};
+        int distance_from_start[MAX_WIDTH][MAX_HEIGHT] = {0};
+        Vector2 level_end = level_get_position(l, end);
+
+        // Stores the parent of each node, as level coordinates
+        Vector2 parent_map[MAX_WIDTH][MAX_HEIGHT];
+        for (int x = 0; x < MAX_WIDTH; ++x) {
+                for (int y = 0; y < MAX_HEIGHT; ++y) {
+                        // Note that start node will have this as its parent
+                        parent_map[x][y] = VECTOR2_NULL;
+                }
+        }
+        path *queue = path_new();
+        // Convert start to level pos and put in queue
+        path_push(queue, level_get_position(l, start));
+
+        while (path_count(queue)) {
+                Vector2 pos = path_pop(&queue);
+                int x0 = pos.x;
+                int y0 = pos.y;
+                visited[x0][y0] = 1;
+                int tile = level_get_tile(l, x0, y0);
+                if (tile_has_collision(tile)) {
+                        // Cannot go to this tile, so it can't have a parent
+                        parent_map[x0][y0] = VECTOR2_NULL;
+                        continue;
+                }
+
+                // Add all neighbors to queue if not visited and in-bounds
+                for (int x = x0 - 1; x <= x0 + 1; x++) {
+                        for (int y = y0 - 1; y <= y0 + 1; y++) {
+                                if (!within_level_bounds(x, y)) {
+                                        continue;
+                                }
+                                if (visited[x][y]) {
+                                        continue;
+                                }
+                                parent_map[x][y] = (Vector2) {x0, y0};
+                                Vector2 next = {x, y};
+                                path_push(queue, next);
+                        }
+                }
+        }
+        path_destroy(queue);
+
+        // Reconstruct path using parent_map
+        path *ret = path_new();
+        int x = level_end.x;
+        int y = level_end.y;
+        while (!Vector2Eq(parent_map[x][y], VECTOR2_NULL)) {
+                Vector2 curr = {x, y};
+                // Need to scale to screen coordinates
+                path_push_front(&ret, Vector2Scale(curr, TILE_SIZE));
+                Vector2 parent = parent_map[x][y];
+                x = parent.x;
+                y = parent.y;
+        }
+        return ret;
 }
