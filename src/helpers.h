@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-// Error value for Vector2
+// Falsy value for Vector2
 static const Vector2 VECTOR2_NULL = {-1, -1};
 
 int Vector2Eq(Vector2 a, Vector2 b);
