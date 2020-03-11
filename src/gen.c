@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #include "gen.h"
-#include "level.h"
 #include "helpers.h"
+#include "level.h"
 
 static int level_counter;
 

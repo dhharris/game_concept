@@ -7,8 +7,8 @@
 #include "raymath.h"
 #include "utils.h"
 
-#include "level.h"
 #include "helpers.h"
+#include "level.h"
 
 static int CURRENT_LEVEL_ID; // Level that the player is on
 static int GOING_DOWN = 1;   // Whether the player is going down
@@ -261,7 +261,7 @@ Vector2 level_get_position(level *l, Vector2 position)
         assert(x >= 0 && x < MAX_WIDTH);
         assert(y >= 0 && y < MAX_HEIGHT);
 
-        return (Vector2) {x, y};
+        return (Vector2){x, y};
 }
 
 /* Returns a tile given level x, y coordinates */
@@ -356,7 +356,7 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
                                 if (visited[x][y]) {
                                         continue;
                                 }
-                                parent_map[x][y] = (Vector2) {x0, y0};
+                                parent_map[x][y] = (Vector2){x0, y0};
                                 Vector2 next = {x, y};
                                 path_push(queue, next);
                         }

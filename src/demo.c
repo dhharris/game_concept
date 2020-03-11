@@ -58,11 +58,12 @@ int demo_update()
         // Update player location
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
                 // Transform mouse position so it is relative to the map
-                Vector2 mouse_pos = Vector2Add(
-                        GetMousePosition(),
-                        Vector2Subtract(camera.target, camera.offset));
+                Vector2 mouse_pos =
+                    Vector2Add(GetMousePosition(),
+                               Vector2Subtract(camera.target, camera.offset));
                 // Snap to grid
-                Vector2 coordinates = level_get_position(current_level, mouse_pos);
+                Vector2 coordinates =
+                    level_get_position(current_level, mouse_pos);
                 Vector2 new_position = Vector2Scale(coordinates, TILE_SIZE);
 
                 // Validate
@@ -100,13 +101,11 @@ int demo_update()
         }
         character_update(player);
 
-
         // Update items logic
         item_map_update(current_level->item_map);
 
         // Camera follows player
         camera.target = player->position;
-        //SetMouseOffset(player->position.x, player->position.y);
 
         level_time += (float)1 / FPS;
 
@@ -157,7 +156,8 @@ void demo_render()
 
         char player_pos_label[25];
         Vector2 level_pos = level_get_position(current_level, player->position);
-        snprintf(player_pos_label, 25, "Player X: %2.2f Y: %2.2f", level_pos.x, level_pos.y);
+        snprintf(player_pos_label, 25, "Player X: %2.2f Y: %2.2f", level_pos.x,
+                 level_pos.y);
         DrawText(player_pos_label, 100, 132, 16, BLACK);
 
         DrawFPS(WINDOW_WIDTH - 85, 10);

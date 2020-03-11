@@ -7,7 +7,6 @@ typedef struct path_node {
         struct path_node *next;
 } path; /* Defines a path as a linked list */
 
-
 /* Function interface to path */
 path *path_new();
 void path_destroy(path *s);
