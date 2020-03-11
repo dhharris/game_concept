@@ -8,7 +8,7 @@
 path *path_new()
 {
         path *head = malloc(sizeof(path));
-        head->position = Vector2Zero();
+        head->position = VECTOR2_NULL;
         head->next = NULL;
         return head;
 }
@@ -35,8 +35,7 @@ int path_count(path *head)
 
 void path_push(path *head, Vector2 position)
 {
-        // FIXME: Doesn't work if the head node has position {0,0}
-        if (Vector2Eq(head->position, Vector2Zero())) {
+        if (Vector2Eq(head->position, VECTOR2_NULL)) {
                 head->position = position;
                 return;
         }
@@ -48,10 +47,18 @@ void path_push(path *head, Vector2 position)
         cur->next->next = NULL;
 }
 
+void path_push_front(path **head, Vector2 position)
+{
+        path *new_head = path_new();
+        new_head->position = position;
+        new_head->next = *head;
+        *head = new_head;
+}
+
 Vector2 path_pop(path **head)
 {
         if (!(*head))
-                return Vector2Zero(); // TODO: different falsy value
+                return VECTOR2_NULL;
         path *next = (*head)->next;
         Vector2 ret = (*head)->position;
         free(*head);
