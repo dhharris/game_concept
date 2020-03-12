@@ -312,7 +312,25 @@ int within_level_bounds(int x, int y)
         return ((x >= 0 && x < LEVEL_SIZE) && (y >= 0 && y < LEVEL_SIZE));
 }
 
-/* Computes shortest path using BFS */
+/* Returns the Vector2 coordinates of closest, unvisited node */
+Vector2 dijkstra_get_next(int visited[LEVEL_SIZE][LEVEL_SIZE], int distance_from_start[LEVEL_SIZE][LEVEL_SIZE])
+{
+        int min_dist = distance_from_start[0][0];
+        Vector2 min_pos = VECTOR2_NULL;
+        for (int x = 0; x < LEVEL_SIZE; ++x) {
+                for (int y = 0; y < LEVEL_SIZE; ++y) {
+                        int dist = distance_from_start[x][y];
+                        if (!visited[x][y] && dist < min_dist) {
+                                min_dist = dist;
+                                min_pos.x = x;
+                                min_pos.y = y;
+                        }
+                }
+        }
+        return min_pos;
+}
+
+/* Computes shortest path using Dijkstra's algorithm */
 path *level_shortest_path(level *l, Vector2 start, Vector2 end)
 {
         // Early exit if end is invalid
@@ -320,59 +338,59 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
                 return path_new();
         }
         int visited[LEVEL_SIZE][LEVEL_SIZE] = {0};
-        int distance_from_start[LEVEL_SIZE][LEVEL_SIZE] = {0};
+        int distance_from_start[LEVEL_SIZE][LEVEL_SIZE];
+        Vector2 parent_map[LEVEL_SIZE][LEVEL_SIZE];
+
         Vector2 level_start = level_get_position(l, start);
         Vector2 level_end = level_get_position(l, end);
 
-        // Stores the parent of each node, as level coordinates
-        Vector2 parent_map[LEVEL_SIZE][LEVEL_SIZE];
+
+        // Add all valid tiles to the queue
         for (int x = 0; x < LEVEL_SIZE; ++x) {
                 for (int y = 0; y < LEVEL_SIZE; ++y) {
                         // Note that start node will have this as its parent
                         parent_map[x][y] = VECTOR2_NULL;
+                        distance_from_start[x][y] = 9999;
                 }
         }
-        path *queue = path_new();
-        // Convert start to level pos and put in queue
-        path_push(queue, level_start);
-        visited[(int) level_start.x][(int) level_start.y] = 1;
+        distance_from_start[(int) level_start.x][(int) level_start.y] = 0;
         TraceLog(LOG_INFO, "[PATHFINDING] Computing shortest path between (%f, %f) and (%f, %f)", level_start.x, level_start.y, level_end.x, level_end.y);
 
         // Continue until queue is empty
-        while (!path_empty(queue)) {
-                Vector2 pos = path_pop(&queue);
-                TraceLog(LOG_INFO, "[PATHFINDING] Processing (%f, %f)", pos.x, pos.y);
+        Vector2 pos = dijkstra_get_next(visited, distance_from_start);
+
+        while (!Vector2Eq(pos, VECTOR2_NULL)) {
                 if (Vector2Eq(pos, level_end)) {
                         break;
                 }
                 int x0 = pos.x;
                 int y0 = pos.y;
-                int tile = level_get_tile(l, x0, y0);
-                if (tile_has_collision(tile)) {
-                        // Cannot go to this tile, so it can't have a parent
-                        parent_map[x0][y0] = VECTOR2_NULL;
-                        continue;
-                }
+                visited[x0][y0] = 1;
 
-                // Add all neighbors to queue if not visited and in-bounds
+                // Check distances of unvisited neighbors
                 for (int x = x0 - 1; x <= x0 + 1; x++) {
                         for (int y = y0 - 1; y <= y0 + 1; y++) {
                                 if (!within_level_bounds(x, y)) {
                                         continue;
                                 }
-                                if (!visited[x][y]) {
+                                int tile = level_get_tile(l, x, y);
+                                if (tile_has_collision(tile)) {
                                         visited[x][y] = 1;
-                                        Vector2 parent = parent_map[x][y];
-                                        distance_from_start[x][y] =
-                                                distance_from_start[x0][y0] + 1;
-                                        parent_map[x][y] = pos;
-                                        Vector2 next = {x, y};
-                                        path_push(queue, next);
+                                        continue;
+                                }
+                                if (!visited[x][y]) {
+                                        int prev_dist =
+                                                distance_from_start[x][y];
+                                        int dist = distance_from_start[x0][y0] + abs(x - x0) + abs(y - y0);
+                                        if (dist < prev_dist) {
+                                                parent_map[x][y] = pos;
+                                                distance_from_start[x][y] = dist;
+                                        }
                                 }
                         }
                 }
+                pos = dijkstra_get_next(visited, distance_from_start);
         }
-        path_destroy(queue);
 
         // Reconstruct path using parent_map
         path *ret = path_new();
