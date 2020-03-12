@@ -45,6 +45,10 @@ item_stack *item_stack_new()
 
 void item_stack_destroy(item_stack *s)
 {
+        // No-op if null
+        if (!s) {
+                return;
+        }
         while (s->next) {
                 item_stack *tmp = s->next;
                 item_destroy(s->item);

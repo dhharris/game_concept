@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "item.h"
+#include "path.h"
 
 /* character constants */
 #define INVENTORY_SIZE 10
@@ -9,7 +10,8 @@
 typedef struct {
         char *name;
         Vector2 position;
-        Vector2 new_position;
+        Vector2 new_position; // Position we will move to next
+        path *path; // Stores a path the player is currently traversing
         int facing_left; // Determine whether we need to invert the texture
         int health;
         item inventory[INVENTORY_SIZE];

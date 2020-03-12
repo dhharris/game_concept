@@ -13,4 +13,4 @@ void path_destroy(path *s);
 void path_push(path *head, Vector2 position);
 void path_push_front(path **head, Vector2 position);
 Vector2 path_pop(path **head);
-int path_count(path *head);
+int path_empty(path *head);

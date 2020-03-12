@@ -150,7 +150,7 @@ level *level_load_file(const char *filename)
 
         level *l = malloc(sizeof(level));
         // Make sure all tiles are initialized
-        l->tile_map = calloc(MAX_WIDTH * MAX_HEIGHT, sizeof(int));
+        l->tile_map = calloc(LEVEL_SIZE * LEVEL_SIZE, sizeof(int));
         l->item_map = item_map_init();
 
         int y = 0;
@@ -173,7 +173,7 @@ level *level_load_file(const char *filename)
                                     Vector2Scale((Vector2){x, y}, TILE_SIZE);
                         }
 
-                        l->tile_map[x + y * MAX_WIDTH] = type;
+                        l->tile_map[x + y * LEVEL_SIZE] = type;
                         tile_counts[type]++;
                 }
                 ++y;
@@ -242,7 +242,7 @@ void level_render_tiles(level *l)
 {
         for (int x = 0; x < LEVEL_SIZE; ++x) {
                 for (int y = 0; y < LEVEL_SIZE; ++y) {
-                        int type = l->tile_map[x + y * MAX_WIDTH];
+                        int type = l->tile_map[x + y * LEVEL_SIZE];
                         if (type != TILETYPE_NONE) {
                                 DrawTextureV(
                                     l->texture_map[type],
@@ -258,8 +258,8 @@ Vector2 level_get_position(level *l, Vector2 position)
         int x = fabs(floorf(position.x / TILE_SIZE));
         int y = fabs(floorf(position.y / TILE_SIZE));
 
-        assert(x >= 0 && x < MAX_WIDTH);
-        assert(y >= 0 && y < MAX_HEIGHT);
+        assert(x >= 0 && x < LEVEL_SIZE);
+        assert(y >= 0 && y < LEVEL_SIZE);
 
         return (Vector2){x, y};
 }
@@ -267,7 +267,7 @@ Vector2 level_get_position(level *l, Vector2 position)
 /* Returns a tile given level x, y coordinates */
 int level_get_tile(level *l, int x, int y)
 {
-        return l->tile_map[y * MAX_WIDTH + x];
+        return l->tile_map[y * LEVEL_SIZE + x];
 }
 
 /* Returns the tile at a given screen position */
@@ -309,7 +309,7 @@ int level_should_reset(level *l, Vector2 character_position)
 
 int within_level_bounds(int x, int y)
 {
-        return ((x >= 0 && x < MAX_WIDTH) && (y >= 0 && y < MAX_HEIGHT));
+        return ((x >= 0 && x < LEVEL_SIZE) && (y >= 0 && y < LEVEL_SIZE));
 }
 
 /* Computes shortest path using BFS */
@@ -319,27 +319,34 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
         if (!level_validate_position(l, end)) {
                 return path_new();
         }
-        int visited[MAX_WIDTH][MAX_HEIGHT] = {0};
-        int distance_from_start[MAX_WIDTH][MAX_HEIGHT] = {0};
+        int visited[LEVEL_SIZE][LEVEL_SIZE] = {0};
+        int distance_from_start[LEVEL_SIZE][LEVEL_SIZE] = {0};
+        Vector2 level_start = level_get_position(l, start);
         Vector2 level_end = level_get_position(l, end);
 
         // Stores the parent of each node, as level coordinates
-        Vector2 parent_map[MAX_WIDTH][MAX_HEIGHT];
-        for (int x = 0; x < MAX_WIDTH; ++x) {
-                for (int y = 0; y < MAX_HEIGHT; ++y) {
+        Vector2 parent_map[LEVEL_SIZE][LEVEL_SIZE];
+        for (int x = 0; x < LEVEL_SIZE; ++x) {
+                for (int y = 0; y < LEVEL_SIZE; ++y) {
                         // Note that start node will have this as its parent
                         parent_map[x][y] = VECTOR2_NULL;
                 }
         }
         path *queue = path_new();
         // Convert start to level pos and put in queue
-        path_push(queue, level_get_position(l, start));
+        path_push(queue, level_start);
+        visited[(int) level_start.x][(int) level_start.y] = 1;
+        TraceLog(LOG_INFO, "[PATHFINDING] Computing shortest path between (%f, %f) and (%f, %f)", level_start.x, level_start.y, level_end.x, level_end.y);
 
-        while (path_count(queue)) {
+        // Continue until queue is empty
+        while (!path_empty(queue)) {
                 Vector2 pos = path_pop(&queue);
+                TraceLog(LOG_INFO, "[PATHFINDING] Processing (%f, %f)", pos.x, pos.y);
+                if (Vector2Eq(pos, level_end)) {
+                        break;
+                }
                 int x0 = pos.x;
                 int y0 = pos.y;
-                visited[x0][y0] = 1;
                 int tile = level_get_tile(l, x0, y0);
                 if (tile_has_collision(tile)) {
                         // Cannot go to this tile, so it can't have a parent
@@ -353,12 +360,15 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
                                 if (!within_level_bounds(x, y)) {
                                         continue;
                                 }
-                                if (visited[x][y]) {
-                                        continue;
+                                if (!visited[x][y]) {
+                                        visited[x][y] = 1;
+                                        Vector2 parent = parent_map[x][y];
+                                        distance_from_start[x][y] =
+                                                distance_from_start[x0][y0] + 1;
+                                        parent_map[x][y] = pos;
+                                        Vector2 next = {x, y};
+                                        path_push(queue, next);
                                 }
-                                parent_map[x][y] = (Vector2){x0, y0};
-                                Vector2 next = {x, y};
-                                path_push(queue, next);
                         }
                 }
         }

@@ -13,24 +13,22 @@ path *path_new()
         return head;
 }
 
-void path_destroy(path *s)
+void path_destroy(path *p)
 {
-        while (s->next) {
-                path *tmp = s->next;
-                free(s);
-                s = tmp;
+        // No-op if null
+        if (!p) {
+                return;
+        }
+        while (p->next) {
+                path *tmp = p->next;
+                free(p);
+                p = tmp;
         }
 }
 
-int path_count(path *head)
+int path_empty(path *head)
 {
-        int count = 0;
-        while (head) {
-                head = head->next;
-                count++;
-        }
-
-        return count;
+        return Vector2Eq(head->position, VECTOR2_NULL);
 }
 
 void path_push(path *head, Vector2 position)
@@ -59,6 +57,11 @@ Vector2 path_pop(path **head)
 {
         if (!(*head))
                 return VECTOR2_NULL;
+        if (!(*head)->next) {
+                Vector2 tmp = (*head)->position;
+                (*head)->position = VECTOR2_NULL;
+                return tmp;
+        }
         path *next = (*head)->next;
         Vector2 ret = (*head)->position;
         free(*head);

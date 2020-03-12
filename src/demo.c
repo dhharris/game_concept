@@ -56,7 +56,7 @@ void demo_init(char *name)
 int demo_update()
 {
         // Update player location
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 // Transform mouse position so it is relative to the map
                 Vector2 mouse_pos =
                     Vector2Add(GetMousePosition(),
@@ -66,10 +66,9 @@ int demo_update()
                     level_get_position(current_level, mouse_pos);
                 Vector2 new_position = Vector2Scale(coordinates, TILE_SIZE);
 
-                // Validate
-                if (level_validate_position(current_level, new_position)) {
-                        player->new_position = new_position;
-                }
+                // Free path data if it exists
+                path_destroy(player->path);
+                player->path = level_shortest_path(current_level, player->position, new_position);
         }
         // Keyboard movement
         if (IsKeyDown(KEY_UP)) {
