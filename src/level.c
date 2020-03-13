@@ -313,7 +313,8 @@ int within_level_bounds(int x, int y)
 }
 
 /* Returns the Vector2 coordinates of closest, unvisited node */
-Vector2 dijkstra_get_next(int visited[LEVEL_SIZE][LEVEL_SIZE], int distance_from_start[LEVEL_SIZE][LEVEL_SIZE])
+Vector2 dijkstra_get_next(int visited[LEVEL_SIZE][LEVEL_SIZE],
+                          int distance_from_start[LEVEL_SIZE][LEVEL_SIZE])
 {
         int min_dist = distance_from_start[0][0];
         Vector2 min_pos = VECTOR2_NULL;
@@ -344,7 +345,6 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
         Vector2 level_start = level_get_position(l, start);
         Vector2 level_end = level_get_position(l, end);
 
-
         // Add all valid tiles to the queue
         for (int x = 0; x < LEVEL_SIZE; ++x) {
                 for (int y = 0; y < LEVEL_SIZE; ++y) {
@@ -353,12 +353,13 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
                         distance_from_start[x][y] = 9999;
                 }
         }
-        distance_from_start[(int) level_start.x][(int) level_start.y] = 0;
-        TraceLog(LOG_INFO, "[PATHFINDING] Computing shortest path between (%f, %f) and (%f, %f)", level_start.x, level_start.y, level_end.x, level_end.y);
+        distance_from_start[(int)level_start.x][(int)level_start.y] = 0;
+        TraceLog(LOG_INFO,
+                 "[PATHFINDING] Computing shortest path between (%f, %f) and "
+                 "(%f, %f)",
+                 level_start.x, level_start.y, level_end.x, level_end.y);
 
-        // Continue until queue is empty
         Vector2 pos = dijkstra_get_next(visited, distance_from_start);
-
         while (!Vector2Eq(pos, VECTOR2_NULL)) {
                 if (Vector2Eq(pos, level_end)) {
                         break;
@@ -367,7 +368,7 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
                 int y0 = pos.y;
                 visited[x0][y0] = 1;
 
-                // Check distances of unvisited neighbors
+                // Recalculate distances of unvisited neighbors
                 for (int x = x0 - 1; x <= x0 + 1; x++) {
                         for (int y = y0 - 1; y <= y0 + 1; y++) {
                                 if (!within_level_bounds(x, y)) {
@@ -380,11 +381,17 @@ path *level_shortest_path(level *l, Vector2 start, Vector2 end)
                                 }
                                 if (!visited[x][y]) {
                                         int prev_dist =
-                                                distance_from_start[x][y];
-                                        int dist = distance_from_start[x0][y0] + abs(x - x0) + abs(y - y0);
+                                            distance_from_start[x][y];
+                                        // We use Euclidean distance to
+                                        // weight diagonal movement higher
+                                        int diff = abs(x - x0) + abs(y - y0);
+                                        int dist =
+                                            distance_from_start[x0][y0] + diff;
+
                                         if (dist < prev_dist) {
                                                 parent_map[x][y] = pos;
-                                                distance_from_start[x][y] = dist;
+                                                distance_from_start[x][y] =
+                                                    dist;
                                         }
                                 }
                         }
