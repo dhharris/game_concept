@@ -6,7 +6,7 @@
 #include "tiletypes.h"
 
 #define LEVEL_NAME_LIMIT 32
-#define LEVEL_SIZE 20
+#define LEVEL_SIZE 30
 
 #define NUM_LEVELS 2
 #define MAX_WIDTH 512
