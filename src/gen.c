@@ -7,7 +7,7 @@
 #include "helpers.h"
 #include "level.h"
 
-#define NOISE_THRESHOLD 110
+#define NOISE_THRESHOLD 105
 
 static int level_counter;
 static int SEED;
@@ -94,7 +94,7 @@ float *gen_perlin_noise(int width, int height)
         float *noise = malloc(sizeof(float) * width * height);
         for (int y = 0; y < height; ++y) {
                 for (int x = 0; x < width; ++x) {
-                        noise[width * x + y] = 255 * perlin2d(x, y, 0.1, 4);
+                        noise[width * x + y] = 255 * perlin2d(x, y, 0.1, 3);
                 }
         }
         return noise;
