@@ -100,24 +100,6 @@ float *gen_perlin_noise(int width, int height)
         return noise;
 }
 
-void write_perlin_noise_image(float *perlin_noise)
-{
-        Color *pixels = malloc(sizeof(Color) * LEVEL_SIZE * LEVEL_SIZE);
-        for (int i = 0; i < LEVEL_SIZE * LEVEL_SIZE; ++i) {
-                pixels[i].r = pixels[i].b = pixels[i].g = 0;
-                pixels[i].a = perlin_noise[i];
-        }
-        Image image = LoadImageEx(pixels, LEVEL_SIZE, LEVEL_SIZE);
-        char filename[54];
-        uuid_t bin_uuid;
-        uuid_generate(bin_uuid);
-        char uuid[37];
-        uuid_unparse(bin_uuid, uuid);
-        snprintf(filename, 54, "perlin_noise-%s.png", uuid);
-        ExportImage(image, filename);
-        UnloadImage(image);
-}
-
 Vector2 get_stairs_coord(float *perlin_noise)
 {
         int rand_x = arc4random() % (LEVEL_SIZE - 2) + 1;
@@ -143,7 +125,6 @@ void gen_level()
 
         set_seed(arc4random());
         float *perlin_noise = gen_perlin_noise(LEVEL_SIZE, LEVEL_SIZE);
-        write_perlin_noise_image(perlin_noise);
 
         /* Place stairs in random locations that are in-bounds */
         Vector2 stair_up = get_stairs_coord(perlin_noise);

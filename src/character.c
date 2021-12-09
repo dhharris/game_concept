@@ -10,7 +10,7 @@ static int FRAME_COUNTER = 0;
 
 void flip_character_sprite(character *c)
 {
-        Image flipped = GetTextureData(c->texture);
+        Image flipped = LoadImageFromTexture(c->texture);
         ImageFlipHorizontal(&flipped);
         UnloadTexture(c->texture);
         LoadTextureFromImage(flipped);
