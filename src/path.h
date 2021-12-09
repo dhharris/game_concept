@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common.h"
-
 typedef struct path_node {
         Vector2 position;
         struct path_node *next;

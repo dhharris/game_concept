@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 /**
  * Contains all item logic. Rendering is done by the level.
  */

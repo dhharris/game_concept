@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "raylib.h"
-#include "raymath.h"
+#include <raylib.h>
+#include <raymath.h>
 #include "utils.h"
 
 #include "character.h"
+#include "constants.h"
 #include "gen.h"
 #include "helpers.h"
 #include "level.h"

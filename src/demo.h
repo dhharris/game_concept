@@ -2,8 +2,6 @@
 
 /* Contains important game constants and methods */
 
-#include "common.h"
-
 #define GAME_STATE_RUNNING 1
 #define GAME_STATE_PAUSED 2
 #define GAME_STATE_GAMEOVER -1

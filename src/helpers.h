@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include <raylib.h>
 
 // Falsy value for Vector2
 static const Vector2 VECTOR2_NULL = {-1, -1};

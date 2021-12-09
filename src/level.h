@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "item.h"
 #include "path.h"
 #include "tiletypes.h"

@@ -1,7 +1,5 @@
 #include <stdlib.h>
 
-#include "raymath.h"
-
 #include "helpers.h"
 #include "path.h"
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common.h"
+#include <raylib.h>
+
 #include "item.h"
 #include "path.h"
 

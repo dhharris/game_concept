@@ -1,7 +1,7 @@
 #include "character.h"
 #include "helpers.h"
 #include "level.h"
-#include "raymath.h"
+#include <raymath.h>
 #include <stdlib.h>
 
 // These variables control player speed

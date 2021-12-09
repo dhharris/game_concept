@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "helpers.h"
 
 int Vector2Eq(Vector2 a, Vector2 b)

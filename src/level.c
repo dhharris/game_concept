@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "raymath.h"
+#include <raylib.h>
+#include <raymath.h>
+
+#include "constants.h"
 #include "utils.h"
 
 #include "helpers.h"

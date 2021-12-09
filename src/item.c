@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "raymath.h"
-#include "utils.h"
+#include <raylib.h>
+#include <raymath.h>
+
+#include "constants.h"
 
 #include "item.h"
 #include "level.h"
