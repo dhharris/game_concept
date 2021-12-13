@@ -7,7 +7,7 @@ A *work in progress* roguelike game written entirely in C.
 Install `raylib` and its dependencies
 ```
 brew install glfw
-git clone https://github.com/raysan5/raylib.git
+git submodule update --init --recursive raylib
 cd raylib/src
 make
 ```
